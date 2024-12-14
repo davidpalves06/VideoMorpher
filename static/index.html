@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Video Effects With Golang</title>
+	<link rel="stylesheet" type="text/css" href="/static/styles.css">
+</head>
+<body>
+    <h1>Video Effects With GO</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data" id="fileForm">
+        <label for="fileUpload" style="cursor: pointer; padding: 10px;background-color: #007BFF; color: white; border-radius: 5px;">
+            Choose File
+        </label>
+        <input type="file" id="fileUpload" name="file" style="display: none;" accept=".mp4,.avi">
+        <div id="selectedFile"></div>
+        <input type="text" name="outputFileName" placeholder="Enter your name" style="margin: 10px 0; padding: 5px;">
+        
+        <button type="submit" style="padding: 10px;" id="formButton">Upload</button>
+        <div id="downloadFile"></div>
+    </form>
+    <script src="/static/index.js"></script>
+</body>
+</html>
