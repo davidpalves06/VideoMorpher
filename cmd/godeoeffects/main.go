@@ -1,9 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -12,6 +14,7 @@ import (
 )
 
 const MAX_UPLOAD_FILE_SIZE int64 = 1 << 30 // 1GB
+var channelMapping = make(map[string](chan uint8))
 
 func handleDownloads(w http.ResponseWriter, r *http.Request) {
 	fileName := r.URL.Query().Get("file")
@@ -31,6 +34,44 @@ func handleDownloads(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, filePath)
 }
 
+func handleProgressUpdates(w http.ResponseWriter, r *http.Request) {
+	processID := r.URL.Query().Get("processID")
+	if processID == "" {
+		http.Error(w, "ProcessID is missing", http.StatusBadRequest)
+		return
+	}
+	log.Println("CHECKING PROGRESS FOR", processID)
+
+	if r.Method != "GET" {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/event-stream")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
+
+	flusher, ok := w.(http.Flusher)
+	if !ok {
+		http.Error(w, "Streaming unsupported", http.StatusInternalServerError)
+		return
+	}
+
+	processChannel := channelMapping[processID]
+
+	for percentage := range processChannel {
+		fmt.Fprintf(w, "event: progress\n")
+		fmt.Fprintf(w, "data: %d%%\n\n", percentage)
+		flusher.Flush()
+		log.Println("Flushed:", percentage)
+		if percentage == 100 {
+			delete(channelMapping, processID)
+			break
+		}
+	}
+
+}
+
 func handleIndexPage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "text/html")
 	log.Println("Serving HTML to index route")
@@ -46,10 +87,12 @@ func handleIndexPage(w http.ResponseWriter, r *http.Request) {
 func handleFileUploads(w http.ResponseWriter, r *http.Request) {
 	log.Println("Upload file request")
 	if r.Method != "POST" {
-		w.WriteHeader(405)
-		fmt.Fprint(w, "Path not found.")
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
+
+	var processId = generateRandomID(10)
+	channelMapping[processId] = make(chan uint8, 1)
 
 	r.Body = http.MaxBytesReader(w, r.Body, MAX_UPLOAD_FILE_SIZE)
 
@@ -71,18 +114,27 @@ func handleFileUploads(w http.ResponseWriter, r *http.Request) {
 	var tmpOutputFile = "uploads/" + outputFile
 	var fileBytes []byte = videoeffects.GetFileBytes(file)
 
-	videoeffects.VideoConversion(fileBytes, tmpOutputFile)
+	go videoeffects.VideoConversion(fileBytes, tmpOutputFile, channelMapping[processId])
 
-	log.Println("Length of file bytes ", len(fileBytes))
-	fmt.Fprintf(w, "<p>File processed successfully</p><a href='/download?file=%v'>Download file</a>", outputFile)
+	w.WriteHeader(http.StatusAccepted)
+	json.NewEncoder(w).Encode(map[string]string{"processID": processId})
 
 }
 
-func main() {
+func generateRandomID(length int) string {
+	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = charset[rand.Intn(len(charset))]
+	}
+	return string(b)
+}
 
+func main() {
 	http.Handle("/static/", http.FileServer(http.Dir(".")))
 	http.HandleFunc("/download/", handleDownloads)
 	http.HandleFunc("/upload", handleFileUploads)
+	http.HandleFunc("/progress", handleProgressUpdates)
 	http.HandleFunc("/", handleIndexPage)
 
 	log.Println("Web Server starting to listen at port 8080")
