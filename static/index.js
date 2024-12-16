@@ -1,5 +1,7 @@
 const fileForm = document.getElementById("fileForm");
 const fileUploadInput = document.getElementById("fileUpload");
+const progressTracker = document.getElementById("progressTracker");
+const downloadFile = document.getElementById("downloadFile");
 const sizeUnits = ['Bytes','KiB','MiB','GiB']
 
 fileUploadInput.addEventListener("change",async (event) => {
@@ -28,7 +30,8 @@ fileForm.addEventListener("submit", async (event) => {
         const resultJSON = await response.json();
         const processID = resultJSON.processID
         trackVideoProgress(processID)
-        // document.getElementById("downloadFile").innerHTML = result
+        downloadFile.innerHTML = resultJSON.downloadRef
+        downloadFile.hidden = true
     } else {
         document.getElementById("downloadFile").innerHTML = "<p>Error processing File!</p>"
     }
@@ -39,20 +42,26 @@ function trackVideoProgress(processID) {
 
     
     progressSource.onopen = (event) => {
-        console.log("Event source is opened!");
-        
+        progressTracker.innerHTML = `<p>Progress: 0%</p>`
     }
 
     progressSource.addEventListener('progress',function(event) {
-        console.log('Received:', event.data);
-        // Update UI or process data
+        const progress = event.data
+        if (progress !== "100%") {
+            progressTracker.innerHTML = `<p>Progress: ${progress}</p>`
+        } else {
+            progressSource.close()
+            progressTracker.innerHTML = `<p>Video processed! You can download it in the link below!</p>`
+            downloadFile.hidden = false
+        }
     });
-    
+
+
+
     progressSource.onerror = (event) => {
         console.log('EventSource connection state:', progressSource.readyState);
         progressSource.close()
-    }    
-    
+    }
     
 }
 

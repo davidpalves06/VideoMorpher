@@ -63,7 +63,6 @@ func handleProgressUpdates(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "event: progress\n")
 		fmt.Fprintf(w, "data: %d%%\n\n", percentage)
 		flusher.Flush()
-		log.Println("Flushed:", percentage)
 		if percentage == 100 {
 			delete(channelMapping, processID)
 			break
@@ -117,7 +116,7 @@ func handleFileUploads(w http.ResponseWriter, r *http.Request) {
 	go videoeffects.VideoConversion(fileBytes, tmpOutputFile, channelMapping[processId])
 
 	w.WriteHeader(http.StatusAccepted)
-	json.NewEncoder(w).Encode(map[string]string{"processID": processId})
+	json.NewEncoder(w).Encode(map[string]string{"processID": processId, "downloadRef": fmt.Sprintf("<a href='/download?file=%v'>Download file</a>", outputFile)})
 
 }
 
