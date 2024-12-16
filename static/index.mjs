@@ -1,12 +1,26 @@
+import { ffmpegSupportedFormats,sizeUnits } from "./Constants.mjs";
+
 const fileForm = document.getElementById("fileForm");
 const fileUploadInput = document.getElementById("fileUpload");
 const progressTracker = document.getElementById("progressTracker");
 const downloadFile = document.getElementById("downloadFile");
-const sizeUnits = ['Bytes','KiB','MiB','GiB']
+const operationSelector = document.getElementById("operationSelect");
+const operationInput = document.getElementById("operationInput");
+const SelectedFileInfo = document.getElementById("selectedFile");
+
+fileUploadInput.accept = ffmpegSupportedFormats.map((format) => '.'+format).join(',')
 
 fileUploadInput.addEventListener("change",async (event) => {
     event.preventDefault();
     const fileUploaded = fileUploadInput.files[0]
+    
+    let fileName = fileUploaded.name
+    let fileExtension = fileName.split(".").pop().toLowerCase()
+    if (!ffmpegSupportedFormats.includes(fileExtension)) {
+        fileUploadInput.value = ''
+        SelectedFileInfo.innerHTML = "Can't upload this file format"
+        return
+    }
     let fileSize = fileUploaded.size
     let sizeUnit = 0
     while (fileSize > 1024) {
@@ -20,6 +34,7 @@ fileUploadInput.addEventListener("change",async (event) => {
 fileForm.addEventListener("submit", async (event) => {
     event.preventDefault()
     const formData = new FormData(fileForm)
+    console.log(formData);
     
     const response = await fetch("/upload", {
         method: "POST",
@@ -33,7 +48,7 @@ fileForm.addEventListener("submit", async (event) => {
         downloadFile.innerHTML = resultJSON.downloadRef
         downloadFile.hidden = true
     } else {
-        document.getElementById("downloadFile").innerHTML = "<p>Error processing File!</p>"
+        downloadFile.innerHTML = "<p>Error processing File!</p>"
     }
 })
 
@@ -61,7 +76,33 @@ function trackVideoProgress(processID) {
     progressSource.onerror = (event) => {
         console.log('EventSource connection state:', progressSource.readyState);
         progressSource.close()
-    }
-    
+    }   
 }
+
+function changeOperationInput() {
+    if (operationSelector.value === "conversion") {
+        operationInput.innerHTML = ""
+        const select = document.createElement('select');
+        select.id = 'conversionFormat';
+
+        ffmpegSupportedFormats.forEach(format => {
+            const option = document.createElement('option');
+            option.value = format;
+            option.textContent = format;
+            select.appendChild(option);
+        });
+
+        operationInput.appendChild(select);
+    } else if (operationSelector.value === "motion") {
+        operationInput.innerHTML = "MOTION"
+    } else if (operationSelector.value === "reverse") {
+        operationInput.innerHTML = "REVERSE"
+    }
+}
+
+operationSelector.addEventListener('change',(event) => {
+    changeOperationInput()
+})
+
+changeOperationInput()
 

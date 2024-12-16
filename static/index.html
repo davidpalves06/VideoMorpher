@@ -10,12 +10,18 @@
         <label for="fileUpload" style="cursor: pointer; padding: 10px;background-color: #007BFF; color: white; border-radius: 5px;">
             Choose File
         </label>
-        <input type="file" id="fileUpload" name="file" style="display: none;" accept=".mp4,.avi">
+        <input type="file" id="fileUpload" name="file" style="display: none;">
         <div id="selectedFile"></div>
+        <select id="operationSelect" name="operation">
+            <option value="conversion">Format conversion</option>
+            <option value="motion">Change speed</option>
+            <option value="reverse">Reverse</option>
+        </select>
+        <div id="operationInput"></div>
         <button type="submit" style="padding: 10px;" id="formButton">Upload</button>
     </form>
     <div id="progressTracker"></div>
     <div id="downloadFile"></div>
-    <script src="/static/index.js"></script>
+    <script type="module" src="/static/index.mjs"></script>
 </body>
 </html>

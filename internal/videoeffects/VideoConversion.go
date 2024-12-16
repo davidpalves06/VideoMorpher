@@ -14,7 +14,7 @@ import (
 
 func VideoConversion(inputFileData []byte, outputFile string, progressChannel chan uint8) {
 
-	cmd := exec.Command("ffmpeg", "-loglevel", "info", "-progress", "pipe:1", "-i", "pipe:0", "-filter_complex", `[0:v]setpts=0.5*PTS[v];[0:a]atempo=2.0[a]`, "-map", "[v]", "-map", "[a]", "-y", "-preset", "veryfast", outputFile)
+	cmd := exec.Command("ffmpeg", "-loglevel", "info", "-progress", "pipe:1", "-i", "pipe:0", "-filter_complex", `[0:v]setpts=0.5*PTS[v];[0:a]atempo=2.0[a]`, "-map", "[v]", "-map", "[a]", "-y", "-preset", "veryfast", "-c:v", "libx264", outputFile)
 	cmd.Stdin = bytes.NewReader(inputFileData)
 	stderrPipe, _ := cmd.StderrPipe()
 	stdoutPipe, _ := cmd.StdoutPipe()
