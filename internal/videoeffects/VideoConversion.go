@@ -3,6 +3,7 @@ package videoeffects
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"io"
 	"log"
 	"math"
@@ -35,6 +36,68 @@ func VideoConversion(inputFileData []byte, outputFile string, progressChannel ch
 				duration, _ := strings.CutPrefix(strings.Split(cmdOutput, ",")[0], "Duration:")
 				parsedDuration := parseDuration(duration)
 				outputVideoDuration = parsedDuration.Microseconds() / 2
+				log.Printf("Estimated Output Video duration: %s, In Millisecond: %v\n", parsedDuration, outputVideoDuration)
+				break
+			}
+		}
+	}()
+
+	go func() {
+		scanner := bufio.NewScanner(stdoutPipe)
+		for scanner.Scan() {
+			var cmdOutput = strings.TrimSpace(scanner.Text())
+			if strings.Contains(cmdOutput, "out_time_us") {
+				us_Output_time, _ := strconv.ParseInt(strings.Split(cmdOutput, "=")[1], 10, 64)
+				progressPercentage = uint8(math.Round(float64(us_Output_time) / float64(outputVideoDuration) * 100))
+				progressChannel <- progressPercentage
+				log.Printf("PROGRESS: %d%%\n", progressPercentage)
+			}
+		}
+	}()
+
+	err = cmd.Wait()
+	if err != nil {
+		log.Print("ERROR on FFmpeg")
+		log.Fatal(err)
+	}
+
+	close(progressChannel)
+	log.Printf("Output file %v generated\n", outputFile)
+
+}
+
+func ChangeVideoMotionSpeed(inputFileData []byte, outputFile string, progressChannel chan uint8, motionSpeed float32) {
+	var filter string
+	if motionSpeed >= 0.5 {
+		var videoFilterSpeed = 1 / motionSpeed
+		var audioFilterSpeed = motionSpeed
+		log.Println("Video filter speed:", videoFilterSpeed, "; Audio filter speed:", audioFilterSpeed)
+		filter = fmt.Sprintf("[0:v]setpts=%.2f*PTS[v];[0:a]atempo=%.2f[a]", videoFilterSpeed, audioFilterSpeed)
+	} else {
+		log.Println(motionSpeed)
+	}
+
+	cmd := exec.Command("ffmpeg", "-loglevel", "info", "-progress", "pipe:1", "-i", "pipe:0", "-filter_complex", filter, "-map", "[v]", "-map", "[a]", "-y", "-preset", "veryfast", "-c:v", "libx264", outputFile)
+	cmd.Stdin = bytes.NewReader(inputFileData)
+	stderrPipe, _ := cmd.StderrPipe()
+	stdoutPipe, _ := cmd.StdoutPipe()
+
+	err := cmd.Start()
+
+	if err != nil {
+		log.Fatal("OMG")
+	}
+
+	var outputVideoDuration int64 = -1
+	var progressPercentage uint8 = 0
+	go func() {
+		scanner := bufio.NewScanner(stderrPipe)
+		for scanner.Scan() {
+			var cmdOutput = strings.TrimSpace(scanner.Text())
+			if strings.Contains(cmdOutput, "Duration") {
+				duration, _ := strings.CutPrefix(strings.Split(cmdOutput, ",")[0], "Duration:")
+				parsedDuration := parseDuration(duration)
+				outputVideoDuration = int64(float32(parsedDuration.Microseconds()) / motionSpeed)
 				log.Printf("Estimated Output Video duration: %s, In Millisecond: %v\n", parsedDuration, outputVideoDuration)
 				break
 			}

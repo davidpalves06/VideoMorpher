@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/davidpalves06/GodeoEffects/internal/videoeffects"
 )
@@ -63,7 +64,7 @@ func handleProgressUpdates(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "event: progress\n")
 		fmt.Fprintf(w, "data: %d%%\n\n", percentage)
 		flusher.Flush()
-		if percentage == 100 {
+		if percentage >= 100 {
 			delete(channelMapping, processID)
 			break
 		}
@@ -113,7 +114,32 @@ func handleFileUploads(w http.ResponseWriter, r *http.Request) {
 	var tmpOutputFile = "uploads/" + outputFile
 	var fileBytes []byte = videoeffects.GetFileBytes(file)
 
-	go videoeffects.VideoConversion(fileBytes, tmpOutputFile, channelMapping[processId])
+	operation := r.FormValue("operation")
+	if operation == "motion" {
+		motionSpeed, err := strconv.ParseFloat(r.FormValue("motionSpeed"), 32)
+		if err != nil {
+			log.Println("Motion speed is not a number!", err)
+			http.Error(w, "Motion speed is not a number!", http.StatusBadRequest)
+			return
+		}
+		if motionSpeed < 0.25 || motionSpeed > 2 {
+			log.Println("Motion speed is outside the accepted speed range!")
+			http.Error(w, "Motion speed is outside the accepted speed range!", http.StatusBadRequest)
+			return
+		}
+		go videoeffects.ChangeVideoMotionSpeed(fileBytes, tmpOutputFile, channelMapping[processId], float32(motionSpeed))
+	} else if operation == "reverse" {
+		log.Println("Reverse not accepted yet!")
+		http.Error(w, "Reverse not implemented yet!", http.StatusInternalServerError)
+		return
+	} else if operation == "conversion" {
+		log.Println("Conversion not accepted yet!")
+		http.Error(w, "Conversion not implemented yet!", http.StatusInternalServerError)
+		return
+	} else {
+		log.Println("Operation not recognized!")
+		http.Error(w, "Operation not recognized!", http.StatusBadRequest)
+	}
 
 	w.WriteHeader(http.StatusAccepted)
 	json.NewEncoder(w).Encode(map[string]string{"processID": processId, "downloadRef": fmt.Sprintf("<a href='/download?file=%v'>Download file</a>", outputFile)})

@@ -80,8 +80,8 @@ function trackVideoProgress(processID) {
 }
 
 function changeOperationInput() {
+    operationInput.innerHTML = ""
     if (operationSelector.value === "conversion") {
-        operationInput.innerHTML = ""
         const select = document.createElement('select');
         select.id = 'conversionFormat';
 
@@ -94,7 +94,22 @@ function changeOperationInput() {
 
         operationInput.appendChild(select);
     } else if (operationSelector.value === "motion") {
-        operationInput.innerHTML = "MOTION"
+        const speedSlider = document.createElement('input')
+        speedSlider.type = 'range'
+        speedSlider.min = 0.25
+        speedSlider.value = 1
+        speedSlider.max = 2
+        speedSlider.step = 0.01
+        speedSlider.name = "motionSpeed"
+        const speedIndicator = document.createElement('p')
+        speedIndicator.textContent = 'Speed value : 1'
+        
+        speedSlider.addEventListener('change',(event) => {
+            speedIndicator.textContent = 'Speed value :' + speedSlider.value
+        })
+        operationInput.appendChild(speedSlider)
+        operationInput.appendChild(speedIndicator)
+
     } else if (operationSelector.value === "reverse") {
         operationInput.innerHTML = "REVERSE"
     }
