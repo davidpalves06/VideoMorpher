@@ -11,6 +11,7 @@ import (
 func ChangeVideoMotion(inputFileData []byte, outputFile string, progressChannel chan uint8, motionSpeed float32) (string, error) {
 	var filter string
 
+	// TODO: Accept a bigger range of speed ups
 	if motionSpeed < 0.25 || motionSpeed > 2 {
 		log.Println("Motion speed is outside the accepted speed range!")
 		return "", errors.New("motion speed is outside the accepted speed range")
@@ -19,11 +20,11 @@ func ChangeVideoMotion(inputFileData []byte, outputFile string, progressChannel 
 	if motionSpeed >= 0.5 {
 		var videoFilterSpeed = 1 / motionSpeed
 		var audioFilterSpeed = motionSpeed
-		log.Println("Video filter speed:", videoFilterSpeed, "; Audio filter speed:", audioFilterSpeed)
 		filter = fmt.Sprintf("[0:v]setpts=%.2f*PTS[v];[0:a]atempo=%.2f[a]", videoFilterSpeed, audioFilterSpeed)
 	} else {
-		//TODO: TAKE CARE OF THIS MOTION SPEED
-		log.Println(motionSpeed)
+		var videoFilterSpeed = 1 / motionSpeed
+		var audioFilterSpeed = motionSpeed / 0.5
+		filter = fmt.Sprintf("[0:v]setpts=%.2f*PTS[v];[0:a]atempo=0.5,atempo=%.2f[a]", videoFilterSpeed, audioFilterSpeed)
 	}
 
 	go startFFmpegMotionChange(inputFileData, outputFile, progressChannel, motionSpeed, filter)
