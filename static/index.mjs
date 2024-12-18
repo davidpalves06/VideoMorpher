@@ -68,7 +68,6 @@ function trackVideoProgress(processID) {
             progressSource.close()
             progressTracker.innerHTML = `<p>Video processed! You can download it in the link below!</p>`
             downloadFile.hidden = false
-            
         }
     });
 
@@ -99,7 +98,7 @@ function changeOperationInput() {
         speedSlider.type = 'range'
         speedSlider.min = 0.25
         speedSlider.value = 1
-        speedSlider.max = 2
+        speedSlider.max = 10
         speedSlider.step = 0.01
         speedSlider.name = "motionSpeed"
         const speedIndicator = document.createElement('p')

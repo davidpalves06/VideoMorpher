@@ -41,4 +41,8 @@ func HandleProgressUpdates(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	fmt.Fprintf(w, "event: progress\n")
+	fmt.Fprintf(w, "data: %d\n\n", 100)
+	flusher.Flush()
+
 }
