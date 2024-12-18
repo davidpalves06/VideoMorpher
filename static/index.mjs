@@ -34,7 +34,6 @@ fileUploadInput.addEventListener("change",async (event) => {
 fileForm.addEventListener("submit", async (event) => {
     event.preventDefault()
     const formData = new FormData(fileForm)
-    console.log(formData);
     
     const response = await fetch("/upload", {
         method: "POST",
@@ -62,19 +61,20 @@ function trackVideoProgress(processID) {
 
     progressSource.addEventListener('progress',function(event) {
         const progress = event.data
-        if (progress !== "100%") {
-            progressTracker.innerHTML = `<p>Progress: ${progress}</p>`
+        
+        if (progress < 100) {
+            progressTracker.innerHTML = `<p>Progress: ${progress} %</p>`
         } else {
             progressSource.close()
             progressTracker.innerHTML = `<p>Video processed! You can download it in the link below!</p>`
             downloadFile.hidden = false
+            
         }
     });
 
 
 
     progressSource.onerror = (event) => {
-        console.log('EventSource connection state:', progressSource.readyState);
         progressSource.close()
     }   
 }
@@ -84,6 +84,7 @@ function changeOperationInput() {
     if (operationSelector.value === "conversion") {
         const select = document.createElement('select');
         select.id = 'conversionFormat';
+        select.name = 'conversionFormat';
 
         ffmpegSupportedFormats.forEach(format => {
             const option = document.createElement('option');
@@ -104,8 +105,8 @@ function changeOperationInput() {
         const speedIndicator = document.createElement('p')
         speedIndicator.textContent = 'Speed value : 1'
         
-        speedSlider.addEventListener('change',(event) => {
-            speedIndicator.textContent = 'Speed value :' + speedSlider.value
+        speedSlider.addEventListener('input',(event) => {
+            speedIndicator.textContent = 'Speed value :' + event.target.value
         })
         operationInput.appendChild(speedSlider)
         operationInput.appendChild(speedIndicator)
