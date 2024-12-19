@@ -2,10 +2,15 @@ import { ffmpegSupportedFormats, sizeUnits } from "./Constants.mjs";
 
 const fileForm = document.getElementById("fileForm");
 const fileUploadInput = document.getElementById("fileUpload");
+const formButton = document.getElementById("formButton")
 const downloadFile = document.getElementById("downloadFile");
 const SelectedFileInfo = document.getElementById("selectedFile");
 const progressTracker = document.getElementById("progressTracker");
 const inputVideoPlayer = document.getElementById("inputVideoPlayer");
+const operationSelectionContainer = document.getElementById("operationSelectionContainer")
+const outputVideoPlayer = document.getElementById("outputVideoPlayer")
+let streamLink = ''
+
 
 const handleFileUpload = () => {
     if (fileUploadInput.files && fileUploadInput.files[0]) {
@@ -28,6 +33,15 @@ const handleFileUpload = () => {
         document.getElementById("chooseFileLabel").innerText = "Change File";
         inputVideoPlayer.src = URL.createObjectURL(fileUploaded)
         inputVideoPlayer.hidden = false
+        operationSelectionContainer.hidden = false
+        operationSelectionContainer.style.display = 'flex'
+        formButton.hidden = false
+    }
+    else {
+        inputVideoPlayer.hidden = true
+        operationSelectionContainer.hidden = true
+        operationSelectionContainer.style.display = "none"
+        formButton.hidden = true
     }
 }
 
@@ -52,8 +66,10 @@ export const FileUploadScript = () => {
             const resultJSON = await response.json();
             const processID = resultJSON.processID
             trackVideoProgress(processID)
-            downloadFile.innerHTML = resultJSON.downloadRef
+            downloadFile.innerHTML = `<a href='download?file=${resultJSON.generatedFile}&stream=disabled'>Download file</a>`            
             downloadFile.hidden = true
+            streamLink = `download?file=${resultJSON.generatedFile}&stream=enabled`
+            fileForm.style.display = "none"
         } else {
             downloadFile.innerHTML = "<p>Error processing File!</p>"
         }
@@ -76,6 +92,10 @@ export const FileUploadScript = () => {
                 progressSource.close()
                 progressTracker.innerHTML = `<p>Video processed! You can download it in the link below!</p>`
                 downloadFile.hidden = false
+                let videoSource = document.createElement('source')
+                videoSource.src = streamLink
+                outputVideoPlayer.appendChild(videoSource)
+                outputVideoPlayer.hidden = false
             }
         });
 
@@ -86,5 +106,9 @@ export const FileUploadScript = () => {
         }
     }
 }
+
+
+fileUploadInput.value = ""
+fileUploadInput.files = undefined
 
 handleFileUpload()

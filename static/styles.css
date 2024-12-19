@@ -20,7 +20,8 @@ body {
     display: flex;
     flex-direction: column;
     text-align: center;
-    gap: 10px;
+    gap: 30px;
+    align-items: center;
 }
 
 .chooseFileLabel {
@@ -28,6 +29,24 @@ body {
     background-color: #007BFF;
     color: white;
     border-radius: 5px;
+    cursor: pointer;
+    flex-grow: 0;  
+}
+
+.videoPlayer {
+    background-color: black;
+    min-width: 300px;
+    min-height: 200px;
+    width: 50vw;
+    height: 50vh;
+    margin: auto auto;
+}
+
+.operationSelectionContainer {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
 }
 
 .OperationLegend {
@@ -91,7 +110,6 @@ body {
     height: 20px;
     background-color: transparent;
     border-radius: 5px;
-    opacity: 0.7;
     margin-bottom: 10px;
 }
 
@@ -104,7 +122,7 @@ body {
 
 .motionSliderInput::-moz-range-track {
     height: 10px;
-    background: #a7a7a7af;
+    background: #c5c9a5d0;
     border-radius: 16px;
 }
 
@@ -124,9 +142,6 @@ body {
     cursor: pointer;
 }
 
-.motionSliderInput:hover {
-    opacity: 1;
-}
 
 .operationInput {
     position: relative;
@@ -140,4 +155,20 @@ body {
     border-radius: 4px;
     font-size: 12px;
     text-align: center;
+}
+
+.formButton {
+    padding: 10px;
+    background-color: #007BFF;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.formButton:hover {
+    box-shadow: 0px 1px 5px rgb(65, 64, 64);
 }

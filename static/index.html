@@ -12,39 +12,42 @@
         <p>In this website, you can apply effects to your videos, see the results and download them.</p>
         <form action="/upload" method="post" enctype="multipart/form-data" id="fileForm" class="uploadForm">
             <legend id="selectedFile" class="selectedFileDescription"></legend>
-            <video id="inputVideoPlayer" width="300" height="300" controls hidden></video>
+            <video id="inputVideoPlayer" class="videoPlayer"  controls hidden></video>
             <label for="fileUpload" class="chooseFileLabel" id="chooseFileLabel">
                 Choose File
             </label>
             <input type="file" id="fileUpload" name="file" style="display: none;">
-            <legend class="OperationLegend"><strong><em>Choose operation</em></strong></legend>
 
-            <div class="operationRadioGroup">
 
-                <div class="operationRadioButton">
-                    <input type="radio" id="conversion" name="operation" value="conversion" checked>
-                    <label for="conversion" class="operationRadioLabel">Conversion</label>
+            <div class="operationSelectionContainer" id="operationSelectionContainer" hidden>
+
+                <legend class="OperationLegend"><strong><em>Choose operation</em></strong></legend>
+
+                <div class="operationRadioGroup">
+
+                    <div class="operationRadioButton">
+                        <input type="radio" id="conversion" name="operation" value="conversion" checked>
+                        <label for="conversion" class="operationRadioLabel">Conversion</label>
+                    </div>
+
+                    <div class="operationRadioButton">
+                        <input type="radio" id="motion" name="operation" value="motion">
+                        <label for="motion" class="operationRadioLabel">Motion</label>
+                    </div>
+
+                    <div class="operationRadioButton">
+                        <input type="radio" id="reverse" name="operation" value="reverse">
+                        <label for="reverse" class="operationRadioLabel">Reverse</label>
+                    </div>
                 </div>
 
-                <div class="operationRadioButton">
-                    <input type="radio" id="motion" name="operation" value="motion">
-                    <label for="motion" class="operationRadioLabel">Motion</label>
-                </div>
-
-                <div class="operationRadioButton">
-                    <input type="radio" id="reverse" name="operation" value="reverse">
-                    <label for="reverse" class="operationRadioLabel">Reverse</label>
-                </div>
+                <div id="operationInput" class="operationInput"></div>
             </div>
-
-            <div id="operationInput" class="operationInput"></div>
-            <button type="submit" style="padding: 10px;" id="formButton">Upload</button>
+            <button type="submit" class="formButton" id="formButton" hidden>Upload</button>
         </form>
         <div id="progressTracker"></div>
         <div id="downloadFile"></div>
-        <!-- <video width="400" controls="controls" preload="metadata">
-        <source src="http://localhost:8080/download?file=2.69Speed-input.mp4#t=0.5" type="video/mp4">
-    </video> -->
+        <video id="outputVideoPlayer" class="videoPlayer" controls hidden></video>
     </div>
     <script type="module" src="/static/index.mjs"></script>
 </body>

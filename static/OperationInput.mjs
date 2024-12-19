@@ -4,9 +4,9 @@ function updateRangeLabel(params) {
     const range = document.getElementById("speedSlider")
     const rangeLabel = document.getElementById("speedLabel")
     const newValue = Number(((range.value - range.min) * 100) / (range.max - range.min));
-    const newPosition = 10 + (newValue * 0.05);
-
-    rangeLabel.innerHTML = range.value;
+    const newPosition = 10 + (newValue * 0.1);
+    
+    rangeLabel.innerHTML = Number(range.value).toFixed(2);
     rangeLabel.style.left = `calc(${newValue}% - ${newPosition}px)`;
 }
 
@@ -38,13 +38,16 @@ export const OperationInputScript = () => {
             speedSlider.className = "motionSliderInput"
             speedSlider.type = 'range'
             speedSlider.min = 0.25
-            speedSlider.value = 1
             speedSlider.max = 10
             speedSlider.step = 0.01
+            speedSlider.value = Number(1).toFixed(2)
+            console.log(speedSlider.value);
             speedSlider.name = "motionSpeed"
             const speedIndicator = document.createElement('label')
             speedIndicator.className = "speedRangeIndicator"
             speedIndicator.id = "speedLabel"
+
+            
 
             speedSlider.addEventListener('input', updateRangeLabel)
             operationInput.appendChild(speedSlider)

@@ -8,8 +8,8 @@ import (
 )
 
 func main() {
-	http.Handle("/static/", http.FileServer(http.Dir(".")))
-	http.HandleFunc("/download/", handlers.HandleDownloads)
+	http.Handle("/static", http.FileServer(http.Dir(".")))
+	http.HandleFunc("/download", handlers.HandleDownloads)
 	http.HandleFunc("/upload", handlers.HandleFileUploads)
 	http.HandleFunc("/progress", handlers.HandleProgressUpdates)
 	http.HandleFunc("/", handlers.HandleIndexPage)

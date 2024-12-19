@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
@@ -70,6 +69,7 @@ func HandleFileUploads(w http.ResponseWriter, r *http.Request) {
 		}
 
 	} else if operation == "reverse" {
+		//TODO: CHECK OTHER EFFECTS
 		log.Println("Reverse not accepted yet!")
 		http.Error(w, "Reverse not implemented yet!", http.StatusInternalServerError)
 		return
@@ -89,5 +89,5 @@ func HandleFileUploads(w http.ResponseWriter, r *http.Request) {
 
 	var encodedFileName = url.QueryEscape(filepath.Base(outputFile))
 	w.WriteHeader(http.StatusAccepted)
-	json.NewEncoder(w).Encode(map[string]string{"processID": processId, "downloadRef": fmt.Sprintf("<a href='/download?file=%s'>Download file</a>", encodedFileName)})
+	json.NewEncoder(w).Encode(map[string]string{"processID": processId, "generatedFile": encodedFileName})
 }
