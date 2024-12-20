@@ -14,6 +14,7 @@ body {
     min-height: 100vh;
     flex-direction: column;
     align-items: center;
+    gap: 20px;
 }
 
 .uploadForm {
@@ -171,4 +172,42 @@ body {
 
 .formButton:hover {
     box-shadow: 0px 1px 5px rgb(65, 64, 64);
+}
+
+.progressContainer {
+    appearance: none;
+    position: relative;
+    min-width: 300px;
+    width: 50%;
+    background-color: rgba(173, 173, 173, 0.61);
+    border-radius: 20px;
+    height: 30px;
+    display: none;
+}
+
+#progressTracker {
+    appearance: none;
+    border: none;
+    border-radius: 20px;
+    width: 0%;
+    height: 30px;
+    color: white;
+    text-align: center;
+    transition: width 0.1s linear;
+}
+
+#progressTracker::-moz-progress-bar {
+    background-color: #007BFF;
+}
+
+#progressTracker::-webkit-progress-bar {
+    background-color: #007BFF;
+}
+
+#progressLabel {
+    position: relative;
+    display: block;
+    width: fit-content;
+    left: 0%;
+    transition: left 0.1s linear;
 }

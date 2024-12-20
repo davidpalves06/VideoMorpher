@@ -45,9 +45,14 @@
             </div>
             <button type="submit" class="formButton" id="formButton" hidden>Upload</button>
         </form>
-        <div id="progressTracker"></div>
-        <div id="downloadFile"></div>
+        <div class="progressContainer" id="progressContainer">
+            <progress id="progressTracker" max="100.00"></progress>
+            <label for="progressTracker" id="progressLabel">0%</label>
+        </div>
+        <p id="videoProcessedInfo" hidden>Video processed! You can download it in the link below!</p>
         <video id="outputVideoPlayer" class="videoPlayer" controls hidden></video>
+        <!-- TODO: CHANGE THIS APPEARANCE -->
+        <div id="downloadFile"></div>
     </div>
     <script type="module" src="/static/index.mjs"></script>
 </body>

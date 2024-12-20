@@ -5,6 +5,7 @@ const fileUploadInput = document.getElementById("fileUpload");
 const formButton = document.getElementById("formButton")
 const downloadFile = document.getElementById("downloadFile");
 const SelectedFileInfo = document.getElementById("selectedFile");
+const progressContainer = document.getElementById("progressContainer");
 const progressTracker = document.getElementById("progressTracker");
 const inputVideoPlayer = document.getElementById("inputVideoPlayer");
 const operationSelectionContainer = document.getElementById("operationSelectionContainer")
@@ -66,9 +67,9 @@ export const FileUploadScript = () => {
             const resultJSON = await response.json();
             const processID = resultJSON.processID
             trackVideoProgress(processID)
-            downloadFile.innerHTML = `<a href='download?file=${resultJSON.generatedFile}&stream=disabled'>Download file</a>`            
+            downloadFile.innerHTML = `<a href='/download?file=${resultJSON.generatedFile}&stream=disabled'>Download file</a>`            
             downloadFile.hidden = true
-            streamLink = `download?file=${resultJSON.generatedFile}&stream=enabled`
+            streamLink = `/download?file=${resultJSON.generatedFile}&stream=enabled`
             fileForm.style.display = "none"
         } else {
             downloadFile.innerHTML = "<p>Error processing File!</p>"
@@ -78,20 +79,26 @@ export const FileUploadScript = () => {
     function trackVideoProgress(processID) {
         const progressSource = new EventSource(`/progress?processID=${processID}`)
 
-
-        progressSource.onopen = (event) => {
-            progressTracker.innerHTML = `<p>Progress: 0%</p>`
+        const progressLabel = document.getElementById('progressLabel')
+        progressSource.onopen = () => {
+            progressLabel.innerHTML = `0%`
+            progressContainer.style.display = "block"
         }
 
         progressSource.addEventListener('progress', function (event) {
             const progress = event.data
 
             if (progress < 100) {
-                progressTracker.innerHTML = `<p>Progress: ${progress} %</p>`
+                progressLabel.innerHTML = `<em>${progress}%</em>`
+                progressLabel.style.left = `${progress - 2}%`
+                progressTracker.style.width = `${progress}%`
             } else {
+                progressLabel.innerHTML = `<em>100%</em>`
+                progressLabel.style.left = `98%`
+                progressTracker.style.width = `100%`
                 progressSource.close()
-                progressTracker.innerHTML = `<p>Video processed! You can download it in the link below!</p>`
                 downloadFile.hidden = false
+                document.getElementById("videoProcessedInfo").hidden = false
                 let videoSource = document.createElement('source')
                 videoSource.src = streamLink
                 outputVideoPlayer.appendChild(videoSource)
