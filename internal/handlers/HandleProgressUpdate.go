@@ -35,12 +35,9 @@ func HandleProgressUpdates(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "event: progress\n")
 		fmt.Fprintf(w, "data: %d\n\n", percentage)
 		flusher.Flush()
-		if percentage >= 100 {
-			delete(channelMapping, processID)
-			break
-		}
 	}
 
+	delete(channelMapping, processID)
 	fmt.Fprintf(w, "event: progress\n")
 	fmt.Fprintf(w, "data: %d\n\n", 100)
 	flusher.Flush()

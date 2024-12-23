@@ -22,7 +22,8 @@ func ChangeVideoOutputFormat(inputFileData []byte, outputFile string, progressCh
 
 func startFFmpegConversion(inputFileData []byte, progressChannel chan uint8, outputFormat string, outputFile string) {
 	//TODO: CHECK BEST CONVERSION PARAMS FROM FORMAT TO FORMAT
-	cmd := exec.Command("ffmpeg", "-progress", "pipe:1", "-i", "pipe:0", "-y", "-preset", "veryfast", "-c:v", "libx264", "-c:a", "copy", "-f", outputFormat, outputFile)
+	cmd := exec.Command("ffmpeg", "-progress", "pipe:1", "-i", "pipe:0", "-y", "-preset", "veryfast", "-crf", "20", "-f", outputFormat, outputFile)
+	log.Println(cmd.Args)
 	cmd.Stdin = bytes.NewReader(inputFileData)
 	stderrPipe, _ := cmd.StderrPipe()
 	stdoutPipe, _ := cmd.StdoutPipe()
@@ -42,6 +43,5 @@ func startFFmpegConversion(inputFileData []byte, progressChannel chan uint8, out
 		log.Fatal(err)
 	}
 
-	close(progressChannel)
 	log.Printf("Output file %s generated\n", outputFile)
 }

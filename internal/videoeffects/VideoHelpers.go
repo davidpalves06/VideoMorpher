@@ -32,8 +32,7 @@ func GetFileBytes(file io.Reader) []byte {
 	return fileBytes
 }
 
-func parseDuration(timeStr string) time.Duration {
-	parts := strings.Split(timeStr, ":")
+func parseDuration(parts []string) int64 {
 
 	hours, _ := time.ParseDuration(parts[0] + "h")
 	minutes, _ := time.ParseDuration(parts[1] + "m")
@@ -46,18 +45,21 @@ func parseDuration(timeStr string) time.Duration {
 	}
 
 	duration := hours + minutes + seconds + milliseconds
-	return duration
+	return duration.Microseconds()
 }
 
 func GetInputVideoDuration(stderrPipe io.ReadCloser) int64 {
 	scanner := bufio.NewScanner(stderrPipe)
 	var inputVideoDuration int64 = -1
 	for scanner.Scan() {
-		var cmdOutput = strings.TrimSpace(scanner.Text())
-		if strings.Contains(cmdOutput, "Duration") {
-			duration, _ := strings.CutPrefix(strings.Split(cmdOutput, ",")[0], "Duration:")
+		var cmdOutput = strings.TrimSpace(strings.ToLower(scanner.Text()))
+		if strings.Contains(cmdOutput, "duration") {
+			duration := strings.Split(strings.Split(cmdOutput, ",")[0], ":")[1:]
+			if len(duration) < 3 {
+				continue
+			}
 			parsedDuration := parseDuration(duration)
-			inputVideoDuration = parsedDuration.Microseconds()
+			inputVideoDuration = parsedDuration
 			break
 		}
 	}
@@ -69,10 +71,12 @@ func SendProgressPercentageThroughChannel(stdoutPipe io.ReadCloser, outputVideoD
 	scanner := bufio.NewScanner(stdoutPipe)
 	for scanner.Scan() {
 		var cmdOutput = strings.TrimSpace(scanner.Text())
-		if strings.Contains(cmdOutput, "out_time_us") {
+		if strings.Contains(cmdOutput, "out_time_ms") {
 			us_Output_time, _ := strconv.ParseInt(strings.Split(cmdOutput, "=")[1], 10, 64)
 			progressPercentage = uint8(math.Round(float64(us_Output_time) / float64(outputVideoDuration) * 100))
 			progressChannel <- progressPercentage
 		}
 	}
+
+	close(progressChannel)
 }

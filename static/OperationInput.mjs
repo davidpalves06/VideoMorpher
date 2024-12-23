@@ -41,7 +41,6 @@ export const OperationInputScript = () => {
             speedSlider.max = 10
             speedSlider.step = 0.01
             speedSlider.value = Number(1).toFixed(2)
-            console.log(speedSlider.value);
             speedSlider.name = "motionSpeed"
             const speedIndicator = document.createElement('label')
             speedIndicator.className = "speedRangeIndicator"

@@ -94,10 +94,9 @@ body {
 .formatSelect {
 
     padding: 10px 15px;
-    width: 150px;
+    width: 100px;
     font-size: 16px;
     color: white;
-    text-align: center;
     background-color: #007bff;
     border-radius: 5px;
     border: none;

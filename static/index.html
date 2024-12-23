@@ -12,7 +12,9 @@
         <p>In this website, you can apply effects to your videos, see the results and download them.</p>
         <form action="/upload" method="post" enctype="multipart/form-data" id="fileForm" class="uploadForm">
             <legend id="selectedFile" class="selectedFileDescription"></legend>
-            <video id="inputVideoPlayer" class="videoPlayer"  controls hidden></video>
+            <video id="inputVideoPlayer" class="videoPlayer" width="200px" height="200px" controls preload="metadata">
+            </video>
+            <p id="inputVideoErrorMessage" hidden="true"></p>
             <label for="fileUpload" class="chooseFileLabel" id="chooseFileLabel">
                 Choose File
             </label>
@@ -50,7 +52,9 @@
             <label for="progressTracker" id="progressLabel">0%</label>
         </div>
         <p id="videoProcessedInfo" hidden>Video processed! You can download it in the link below!</p>
-        <video id="outputVideoPlayer" class="videoPlayer" controls hidden></video>
+        <video id="outputVideoPlayer" class="videoPlayer" controls preload="metadata" hidden></video>
+        <p id="outputVideoErrorMessage" hidden="true"></p>
+
         <!-- TODO: CHANGE THIS APPEARANCE -->
         <div id="downloadFile"></div>
     </div>

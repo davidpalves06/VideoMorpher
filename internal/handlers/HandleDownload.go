@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -26,10 +27,15 @@ func HandleDownloads(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
+	var format = filepath.Ext(filePath)[1:]
+
 	shouldStream := r.URL.Query().Get("stream") == "enabled"
 	if shouldStream {
-		//TODO: CHECK FILE FORMAT
-		w.Header().Set("Content-Type", "video/mp4")
+		if format != "mp4" && format != "webm" {
+			http.Error(w, "format not accepted to stream", http.StatusBadRequest)
+			return
+		}
+		w.Header().Set("Content-Type", fmt.Sprintf("video/%s", format))
 		w.Header().Set("Accept-Ranges", "bytes")
 	} else {
 		w.Header().Set("Content-Disposition", "attachment; filename="+fileName)
