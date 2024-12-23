@@ -210,3 +210,15 @@ body {
     left: 0%;
     transition: left 0.1s linear;
 }
+
+#downloadFile {
+    margin-bottom: auto;
+}
+
+#downloadFile a{
+    color: white;
+    font-size: 1.25rem;
+    font-weight: 600;
+    text-decoration-line:none;
+    margin-bottom: auto;
+}
