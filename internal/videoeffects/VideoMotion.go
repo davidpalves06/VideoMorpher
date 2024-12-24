@@ -31,6 +31,7 @@ func ChangeVideoMotion(inputFileData []byte, outputFile string, progressChannel 
 }
 
 func startFFmpegMotionChange(inputFileData []byte, outputFile string, progressChannel chan uint8, motionSpeed float32, filter string) {
+	//TODO: CHECK BEST SETTINGS PER FORMAT
 	cmd := exec.Command("ffmpeg", "-loglevel", "info", "-progress", "pipe:1", "-i", "pipe:0", "-filter_complex", filter, "-map", "[v]", "-map", "[a]", "-y", "-preset", "veryfast", outputFile)
 	cmd.Stdin = bytes.NewReader(inputFileData)
 	stderrPipe, _ := cmd.StderrPipe()
