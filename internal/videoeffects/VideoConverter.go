@@ -36,8 +36,21 @@ func startFFmpegConversion(inputFileData []byte, inputFormat string, progressCha
 		// TODO: CHECK IF CAN SHOWCASE THIS ON PLAYER
 		cmd = exec.Command("ffmpeg", "-progress", "pipe:1", "-i", "pipe:0", "-y", "-c:v", "libx264", "-crf", "18", "-c:a", "aac",
 			"-b:a", "192k", "-f", outputFormat, outputFile)
+	} else if inputFormat == "mp4" && outputFormat == "ogv" {
+		cmd = exec.Command("ffmpeg", "-progress", "pipe:1", "-i", "pipe:0", "-y", "-c:v", "libtheora", "-q:v", "7", "-c:a", "libvorbis",
+			"-q:a", "5", "-f", outputFormat, outputFile)
+	} else if inputFormat == "mp4" && outputFormat == "flv" {
+		// TODO: CHECK IF CAN SHOWCASE THIS ON PLAYER
+		cmd = exec.Command("ffmpeg", "-progress", "pipe:1", "-i", "pipe:0", "-y", "-c:v", "libx264", "-preset", "veryfast",
+			"-crf", "23", "-c:a", "aac", "-b:a", "128k", "-f", outputFormat, outputFile)
+	} else if inputFormat == "mp4" && outputFormat == "mpeg" {
+		cmd = exec.Command("ffmpeg", "-progress", "pipe:1", "-i", "pipe:0", "-y", "-c:v", "mpeg2video", "-b:v", "5000k",
+			"-c:a", "ac3", "-b:a", "384k", "-f", outputFormat, outputFile)
+	} else if inputFormat == "mp4" && outputFormat == "nut" {
+		cmd = exec.Command("ffmpeg", "-progress", "pipe:1", "-i", "pipe:0", "-y", "-c:v", "libx264", "-crf", "23",
+			"-c:a", "aac", "-b:a", "128k", "-c:s", "copy", "-f", outputFormat, outputFile)
 	} else {
-		cmd = exec.Command("ffmpeg", "-progress", "pipe:1", "-i", "pipe:0", "-y", "-preset", "veryfast", "-crf", "20", "-f", outputFormat, outputFile)
+		cmd = exec.Command("ffmpeg", "-progress", "pipe:1", "-i", "pipe:0", "-y", "-c", "copy", "-f", outputFormat, outputFile)
 	}
 	log.Println(cmd.Args)
 	cmd.Stdin = bytes.NewReader(inputFileData)

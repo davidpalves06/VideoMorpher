@@ -82,7 +82,7 @@ export const FileUploadScript = () => {
             const resultJSON = await response.json();
             const processID = resultJSON.processID
             trackVideoProgress(processID)
-            downloadFile.innerHTML = `<a href='/download?file=${resultJSON.generatedFile}&stream=disabled'>Download file</a>`            
+            downloadFile.innerHTML = `<a href='/download?file=${resultJSON.generatedFile}&stream=disabled' class="chooseFileLabel">Download file</a>`            
             downloadFile.hidden = true
             streamLink = `/download?file=${resultJSON.generatedFile}&stream=enabled`
             fileForm.style.display = "none"
