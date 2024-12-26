@@ -80,11 +80,6 @@ func HandleFileUploads(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-	} else if operation == "reverse" {
-		//TODO: CHECK OTHER EFFECTS
-		log.Println("Reverse not accepted yet!")
-		http.Error(w, "Reverse not implemented yet!", http.StatusInternalServerError)
-		return
 	} else if operation == "conversion" {
 		outputFormat := r.FormValue("conversionFormat")
 		outputFile, err = videoeffects.ChangeVideoFormat(tmpFile.Name(), handler.Filename, UPLOAD_DIRECTORY, channelMapping[processId], outputFormat)

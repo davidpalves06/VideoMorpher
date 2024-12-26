@@ -1,4 +1,5 @@
 import { ffmpegSupportedFormats, sizeUnits } from "./Constants.mjs";
+import {OperationInputScript} from "./OperationInput.mjs"
 
 const fileForm = document.getElementById("fileForm");
 const fileUploadInput = document.getElementById("fileUpload");
@@ -51,6 +52,7 @@ const handleFileUpload = () => {
         inputVideoPlayer.load()
         videoErrorMessage.hidden = true
         operationSelectionContainer.hidden = false
+        OperationInputScript()
         operationSelectionContainer.style.display = 'flex'
         formButton.hidden = false
     }

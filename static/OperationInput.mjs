@@ -14,18 +14,19 @@ export const OperationInputScript = () => {
     const fileForm = document.getElementById("fileForm");
     const operationSelectors = fileForm.querySelectorAll('input[name="operation"]');
     const operationInput = document.getElementById("operationInput");
+    const fileUploadInput = document.getElementById("fileUpload");
 
     function changeOperationInput() {
         const operationSelector = fileForm.querySelector('input[name="operation"]:checked');
         operationInput.innerHTML = ""
         if (operationSelector.value === "conversion") {
             const select = document.createElement('select');
-            //TODO: REMOVE FOR FROM FILE SELECTED
+            let selectedFormat = fileUploadInput.files[0].name.split(".").pop().toLowerCase()
             select.id = 'conversionFormat';
             select.name = 'conversionFormat';
             select.className = 'formatSelect'
 
-            ffmpegSupportedFormats.forEach(format => {
+            ffmpegSupportedFormats.filter((format) => format != selectedFormat).forEach(format => {
                 const option = document.createElement('option');
                 option.value = format;
                 option.textContent = format;
@@ -54,8 +55,6 @@ export const OperationInputScript = () => {
             operationInput.appendChild(speedIndicator)
             updateRangeLabel()
 
-        } else if (operationSelector.value === "reverse") {
-            operationInput.innerHTML = "REVERSE"
         }
     }
 

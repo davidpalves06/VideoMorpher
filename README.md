@@ -2,6 +2,7 @@
 WebServer written in Go to add effects to video files
 
 //TODO: ADD ABILITY TO DOWNLOAD PAST OPERATIONS AND RETURN HOME AFTER PROCESSING
+//TODO: ADD OTHER EFFECTS
 //TODO: Change logging
 //TODO: Change video player
 
