@@ -28,3 +28,10 @@ uploads/*
 
 *.mp4
 *.avi
+*.flv
+*.mov
+*.mkv
+*.mpeg
+*.nut
+*.ogv
+*.webm

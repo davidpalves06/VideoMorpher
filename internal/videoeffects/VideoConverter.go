@@ -61,18 +61,15 @@ func getConversionCommandParameters(tmpFileName string, outputFormat string, out
 		return []string{"-progress", "pipe:1", "-i", tmpFileName, "-y", "-c:v", "mpeg4", "-q:v", "5",
 			"-c:a", "mp3", "-b:a", "192k", "-f", outputFormat, outputFile}
 	} else if outputFormat == "mkv" {
-		// TODO: CHECK IF CAN SHOWCASE THIS ON PLAYER
 		return []string{"-progress", "pipe:1", "-i", tmpFileName, "-y", "-map", "0", "-c", "copy", "-map_metadata", "0",
 			"-f", "matroska", outputFile}
 	} else if outputFormat == "mov" {
-		// TODO: CHECK IF CAN SHOWCASE THIS ON PLAYER
 		return []string{"-progress", "pipe:1", "-i", tmpFileName, "-y", "-c:v", "libx264", "-crf", "23", "-c:a", "aac",
 			"-b:a", "192k", "-f", outputFormat, outputFile}
 	} else if outputFormat == "ogv" {
 		return []string{"-progress", "pipe:1", "-i", tmpFileName, "-y", "-c:v", "libtheora", "-q:v", "7", "-c:a", "libvorbis",
 			"-q:a", "5", "-f", outputFormat, outputFile}
 	} else if outputFormat == "flv" {
-		// TODO: CHECK IF CAN SHOWCASE THIS ON PLAYER
 		return []string{"-progress", "pipe:1", "-i", tmpFileName, "-y", "-c:v", "libx264", "-preset", "veryfast",
 			"-crf", "23", "-c:a", "aac", "-b:a", "128k", "-f", outputFormat, outputFile}
 	} else if outputFormat == "mpeg" {

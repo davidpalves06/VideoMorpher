@@ -15,9 +15,10 @@ let streamLink = ''
 
 const handleFileUpload = () => {
     let videoErrorMessage = document.getElementById("inputVideoErrorMessage")
+    videoErrorMessage.innerText = ""
     if (fileUploadInput.files && fileUploadInput.files[0]) {
         const fileUploaded = fileUploadInput.files[0]
-        let fileName = fileUploaded.name 
+        let fileName = fileUploaded.name
         let fileExtension = fileName.split(".").pop().toLowerCase()
         if (!ffmpegSupportedFormats.includes(fileExtension)) {
             fileUploadInput.value = ''
@@ -35,19 +36,20 @@ const handleFileUpload = () => {
         fileSize = Math.round((fileSize + Number.EPSILON) * 100) / 100
         document.getElementById("selectedFile").innerHTML = `<strong><em>${fileUploaded.name}</em></strong> with <strong>${fileSize}</strong> <em>${sizeUnits[sizeUnit]}</em>`
         document.getElementById("chooseFileLabel").innerText = "Change File";
-        if (['mp4','webm'].includes(fileExtension)) {
-            let videoSource = document.createElement('source')
-            videoSource.src = URL.createObjectURL(fileUploaded)
-            inputVideoPlayer.appendChild(videoSource)
-            inputVideoPlayer.hidden = false
-            videoErrorMessage.hidden = true
-        }
-        else {
-            inputVideoPlayer.innerHTML = ""
+        inputVideoPlayer.innerHTML = '';
+        let videoSource = document.createElement('source')
+        videoSource.src = URL.createObjectURL(fileUploaded)
+        videoSource.addEventListener('error', (event) => {
+            console.log("WTF", event);
             inputVideoPlayer.hidden = true
-            videoErrorMessage.innerText = "Only mp4 and webm files are supported in the player"
             videoErrorMessage.hidden = false
-        }
+            videoErrorMessage.innerText = "File format cannot be played"
+        })
+
+        inputVideoPlayer.appendChild(videoSource)
+        inputVideoPlayer.hidden = false
+        inputVideoPlayer.load()
+        videoErrorMessage.hidden = true
         operationSelectionContainer.hidden = false
         operationSelectionContainer.style.display = 'flex'
         formButton.hidden = false
@@ -57,7 +59,6 @@ const handleFileUpload = () => {
         operationSelectionContainer.hidden = true
         operationSelectionContainer.style.display = "none"
         formButton.hidden = true
-        
     }
 }
 
@@ -82,7 +83,7 @@ export const FileUploadScript = () => {
             const resultJSON = await response.json();
             const processID = resultJSON.processID
             trackVideoProgress(processID)
-            downloadFile.innerHTML = `<a href='/download?file=${resultJSON.generatedFile}&stream=disabled' class="chooseFileLabel">Download file</a>`            
+            downloadFile.innerHTML = `<a href='/download?file=${resultJSON.generatedFile}&stream=disabled' class="chooseFileLabel">Download file</a>`
             downloadFile.hidden = true
             streamLink = `/download?file=${resultJSON.generatedFile}&stream=enabled`
             fileForm.style.display = "none"
@@ -112,17 +113,18 @@ export const FileUploadScript = () => {
                 progressLabel.style.left = `98%`
                 progressTracker.style.width = `100%`
                 progressSource.close()
-                downloadFile.hidden = false
                 document.getElementById("videoProcessedInfo").hidden = false
                 let videoSource = document.createElement('source')
                 videoSource.src = streamLink
                 videoSource.onerror = ((event) => {
+                    console.log("WTF", event);
                     outputVideoPlayer.innerHTML = ""
                     outputVideoPlayer.hidden = true
                     let outputVideoErrorMessage = document.getElementById("outputVideoErrorMessage")
-                    outputVideoErrorMessage.innerText = "Only mp4 and webm files are supported in the player"
+                    outputVideoErrorMessage.innerText = "File format cannot be played"
                     outputVideoErrorMessage.hidden = false
                 })
+                downloadFile.hidden = false
                 outputVideoPlayer.appendChild(videoSource)
                 outputVideoPlayer.hidden = false
             }
