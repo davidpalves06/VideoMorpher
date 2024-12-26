@@ -86,16 +86,20 @@ func getMotionCommandParameters(tmpFileName string, inputFormat string, filter s
 			"-b:a", "192k", outputFile}
 	} else if inputFormat == "ogv" {
 
-		return []string{"-progress", "pipe:1", "-i", tmpFileName, "-y", "-c:v", "libtheora", "-q:v", "7", "-c:a", "libvorbis",
+		return []string{"-progress", "pipe:1", "-i", tmpFileName, "-filter_complex", filter, "-map", "[v]", "-map", "[a]", "-y",
+			"-c:v", "libtheora", "-q:v", "7", "-c:a", "libvorbis",
 			"-q:a", "5", "-f", inputFormat, outputFile}
 	} else if inputFormat == "flv" {
-		return []string{"-progress", "pipe:1", "-i", tmpFileName, "-y", "-c:v", "libx264", "-preset", "veryfast",
+		return []string{"-progress", "pipe:1", "-i", tmpFileName, "-filter_complex", filter, "-map", "[v]", "-map", "[a]", "-y",
+			"-c:v", "libx264", "-preset", "veryfast",
 			"-crf", "23", "-c:a", "aac", "-b:a", "128k", "-f", inputFormat, outputFile}
 	} else if inputFormat == "mpeg" {
-		return []string{"-progress", "pipe:1", "-i", tmpFileName, "-y", "-c:v", "mpeg2video", "-b:v", "5000k",
+		return []string{"-progress", "pipe:1", "-i", tmpFileName, "-filter_complex", filter, "-map", "[v]", "-map", "[a]", "-y",
+			"-c:v", "mpeg2video", "-b:v", "5000k",
 			"-c:a", "ac3", "-b:a", "384k", "-f", inputFormat, outputFile}
 	} else if inputFormat == "nut" {
-		return []string{"-progress", "pipe:1", "-i", tmpFileName, "-y", "-c:v", "libx264", "-crf", "23",
+		return []string{"-progress", "pipe:1", "-i", tmpFileName, "-filter_complex", filter, "-map", "[v]", "-map", "[a]", "-y",
+			"-c:v", "libx264", "-crf", "23",
 			"-c:a", "aac", "-b:a", "128k", "-c:s", "copy", "-f", inputFormat, outputFile}
 	}
 	return []string{}
