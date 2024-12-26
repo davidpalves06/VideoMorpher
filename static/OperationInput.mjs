@@ -20,6 +20,7 @@ export const OperationInputScript = () => {
         operationInput.innerHTML = ""
         if (operationSelector.value === "conversion") {
             const select = document.createElement('select');
+            //TODO: REMOVE FOR FROM FILE SELECTED
             select.id = 'conversionFormat';
             select.name = 'conversionFormat';
             select.className = 'formatSelect'
