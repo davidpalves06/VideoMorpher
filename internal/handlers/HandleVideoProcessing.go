@@ -2,10 +2,12 @@ package handlers
 
 import (
 	"encoding/json"
+	"io"
 	"log"
 	"math/rand"
 	"net/http"
 	"net/url"
+	"os"
 	"path/filepath"
 	"strconv"
 
@@ -50,7 +52,17 @@ func HandleFileUploads(w http.ResponseWriter, r *http.Request) {
 	defer file.Close()
 
 	var outputFile string
-	var fileBytes []byte = videoeffects.GetFileBytes(file)
+
+	tmpFile, _ := os.CreateTemp("", "upload-*.tmp")
+	defer tmpFile.Close()
+
+	_, err = io.Copy(tmpFile, file)
+
+	if err != nil {
+		log.Println("Error writing to tmp file")
+		http.Error(w, "error writing to tmp file: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	operation := r.FormValue("operation")
 	if operation == "motion" {
@@ -60,7 +72,7 @@ func HandleFileUploads(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Motion speed is not a number!", http.StatusBadRequest)
 			return
 		}
-		outputFile, err = videoeffects.ChangeVideoMotionSpeed(fileBytes, handler.Filename, UPLOAD_DIRECTORY, channelMapping[processId], float32(motionSpeed))
+		outputFile, err = videoeffects.ChangeVideoMotionSpeed(tmpFile.Name(), handler.Filename, UPLOAD_DIRECTORY, channelMapping[processId], float32(motionSpeed))
 
 		if err != nil {
 			log.Println("Error processing file!", err)
@@ -75,7 +87,7 @@ func HandleFileUploads(w http.ResponseWriter, r *http.Request) {
 		return
 	} else if operation == "conversion" {
 		outputFormat := r.FormValue("conversionFormat")
-		outputFile, err = videoeffects.ChangeVideoFormat(fileBytes, handler.Filename, UPLOAD_DIRECTORY, channelMapping[processId], outputFormat)
+		outputFile, err = videoeffects.ChangeVideoFormat(tmpFile.Name(), handler.Filename, UPLOAD_DIRECTORY, channelMapping[processId], outputFormat)
 
 		if err != nil {
 			log.Println("Error converting video!")
