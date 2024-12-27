@@ -8,7 +8,7 @@
 
 <body>
     <div class="pageContainer">
-        <h1>Video Effects With GO</h1>
+        <h1 id="VideoMorpherHeader">Video Morpher</h1>
         <p>In this website, you can apply effects to your videos, see the results and download them.</p>
         <form action="/upload" method="post" enctype="multipart/form-data" id="fileForm" class="uploadForm">
             <legend id="selectedFile" class="selectedFileDescription"></legend>
@@ -41,6 +41,12 @@
                 <div id="operationInput" class="operationInput"></div>
             </div>
             <button type="submit" class="formButton" id="formButton" hidden>Upload</button>
+            <!-- <div id="pastDownloadsContainer">
+                <ul>
+                    <li>Download1</li>
+                    <li>Download2</li>
+                </ul>
+            </div> -->
         </form>
         <div class="progressContainer" id="progressContainer">
             <progress id="progressTracker" max="100.00"></progress>

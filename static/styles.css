@@ -17,6 +17,17 @@ body {
     gap: 20px;
 }
 
+#VideoMorpherHeader {
+    cursor:pointer;
+    margin-top: 20px;
+    margin-bottom: 0;
+    font-family:'Times New Roman', Times, serif;
+    font-size: 64px;
+    font-weight: 800;
+    font-style: italic;
+    color: yellowgreen;
+}
+
 .uploadForm {
     display: flex;
     flex-direction: column;
@@ -38,8 +49,8 @@ body {
     background-color: black;
     min-width: 300px;
     min-height: 200px;
-    width: 50vw;
-    height: 50vh;
+    width: 40vw;
+    height: 40vh;
     margin: auto auto;
 }
 
