@@ -233,3 +233,34 @@ body {
     text-decoration-line:none;
     margin-bottom: auto;
 }
+
+#pastDownloadsContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.pastDownloadList{
+    padding: 0;
+    list-style-type: none;
+    margin: 0;
+}
+
+.pastDownloadList li {
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #ffffff96;
+    color: #007BFF;
+    text-decoration-line: underline;
+    margin-bottom: 10px;
+}
+
+.pastDownloadList li:hover {
+    cursor: pointer;
+    box-shadow: 0px 0px 3px rgb(65, 64, 64);
+    background-color: transparent;
+}
+
+.pastDownloadList li:last-child {
+    margin-bottom: 0;
+}

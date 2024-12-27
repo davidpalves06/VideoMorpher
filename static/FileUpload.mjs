@@ -1,4 +1,4 @@
-import { ffmpegSupportedFormats, sizeUnits } from "./Constants.mjs";
+import { ffmpegSupportedFormats, LOCAL_STORAGE_DOWNLOADS_KEY, sizeUnits } from "./Constants.mjs";
 import {OperationInputScript} from "./OperationInput.mjs"
 
 const fileForm = document.getElementById("fileForm");
@@ -12,6 +12,7 @@ const inputVideoPlayer = document.getElementById("inputVideoPlayer");
 const operationSelectionContainer = document.getElementById("operationSelectionContainer")
 const outputVideoPlayer = document.getElementById("outputVideoPlayer")
 let streamLink = ''
+let outputFileName = '' 
 
 
 const handleFileUpload = () => {
@@ -41,7 +42,6 @@ const handleFileUpload = () => {
         let videoSource = document.createElement('source')
         videoSource.src = URL.createObjectURL(fileUploaded)
         videoSource.addEventListener('error', (event) => {
-            console.log("WTF", event);
             inputVideoPlayer.hidden = true
             videoErrorMessage.hidden = false
             videoErrorMessage.innerText = "File format cannot be played"
@@ -64,6 +64,27 @@ const handleFileUpload = () => {
     }
 }
 
+
+const addToLocalStorageList = () => {
+    let pastDownloads = localStorage.getItem(LOCAL_STORAGE_DOWNLOADS_KEY);
+    let newFile = {
+        outputFileName,
+        creationDate : new Date()
+    }
+    if (pastDownloads == null) {
+        let pastDownloadList = {
+            downloads:[]
+        }
+
+        pastDownloadList.downloads.push(newFile)
+
+        localStorage.setItem(LOCAL_STORAGE_DOWNLOADS_KEY,JSON.stringify(pastDownloadList))
+    } else {
+        let pastDownloadList = JSON.parse(pastDownloads)
+        pastDownloadList.downloads.push(newFile)
+        localStorage.setItem(LOCAL_STORAGE_DOWNLOADS_KEY,JSON.stringify(pastDownloadList))
+    }
+}
 export const FileUploadScript = () => {
     fileUploadInput.accept = ffmpegSupportedFormats.map((format) => '.' + format).join(',')
 
@@ -87,7 +108,8 @@ export const FileUploadScript = () => {
             trackVideoProgress(processID)
             downloadFile.innerHTML = `<a href='/download?file=${resultJSON.generatedFile}&stream=disabled' class="chooseFileLabel">Download file</a>`
             downloadFile.hidden = true
-            streamLink = `/download?file=${resultJSON.generatedFile}&stream=enabled`
+            outputFileName = resultJSON.generatedFile
+            streamLink = `/download?file=${outputFileName}&stream=enabled`
             fileForm.style.display = "none"
         } else {
             downloadFile.innerHTML = "<p>Error processing File!</p>"
@@ -129,6 +151,7 @@ export const FileUploadScript = () => {
                 downloadFile.hidden = false
                 outputVideoPlayer.appendChild(videoSource)
                 outputVideoPlayer.hidden = false
+                addToLocalStorageList(outputFileName)
             }
         });
 
