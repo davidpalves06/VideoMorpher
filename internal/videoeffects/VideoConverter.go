@@ -2,14 +2,15 @@ package videoeffects
 
 import (
 	"errors"
-	"log"
 	"os/exec"
 	"path/filepath"
+
+	"github.com/davidpalves06/GodeoEffects/internal/logger"
 )
 
 func ChangeVideoOutputFormat(tmpFileName string, inputFileName string, progressChannel chan uint8, outputFormat string) (string, error) {
-
 	if !is_Format_Supported(outputFormat) {
+		logger.Warn().Printf("Output format %s is not supported\n", outputFormat)
 		return "", errors.New("output format is not supported")
 	}
 	ext := filepath.Ext(inputFileName)[1:]
@@ -27,26 +28,31 @@ func startFFmpegConversion(tmpFileName string, progressChannel chan uint8, outpu
 	} else {
 		cmd = exec.Command("ffmpeg", "-progress", "pipe:1", "-i", tmpFileName, "-y", "-c", "copy", "-f", outputFormat, outputFile)
 	}
-	log.Println(cmd.Args)
+
+	logger.Debug().Println(cmd.Args)
 	stderrPipe, _ := cmd.StderrPipe()
 	stdoutPipe, _ := cmd.StdoutPipe()
+
+	logger.Debug().Println("Starting ffmpeg command")
 	err := cmd.Start()
 
 	if err != nil {
-		log.Fatal("OMG")
+		logger.Error().Printf("Error starting ffmpeg command\n")
+		return
 	}
 
 	var outputVideoDuration int64 = getInputVideoDuration(stderrPipe)
+	logger.Debug().Printf("Output video duration : %d\n", outputVideoDuration)
 
 	go sendProgressPercentageThroughChannel(stdoutPipe, outputVideoDuration, progressChannel)
 
 	err = cmd.Wait()
 	if err != nil {
-		log.Print("ERROR on FFmpeg")
-		log.Fatal(err)
+		logger.Error().Println("Error while executing ffmpeg command")
+		return
 	}
 
-	log.Printf("Output file %s generated\n", outputFile)
+	logger.Debug().Printf("Output file %s generated\n", outputFile)
 	removeTempFile(tmpFileName)
 }
 

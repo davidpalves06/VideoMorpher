@@ -3,12 +3,13 @@ package videoeffects
 import (
 	"bufio"
 	"io"
-	"log"
 	"math"
 	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/davidpalves06/GodeoEffects/internal/logger"
 )
 
 func is_Format_Supported(format string) bool {
@@ -19,7 +20,7 @@ func is_Format_Supported(format string) bool {
 }
 
 func parseDuration(parts []string) int64 {
-
+	logger.Debug().Printf("Parsing duration for parts: %v\n", parts)
 	hours, _ := time.ParseDuration(parts[0] + "h")
 	minutes, _ := time.ParseDuration(parts[1] + "m")
 
@@ -31,10 +32,12 @@ func parseDuration(parts []string) int64 {
 	}
 
 	duration := hours + minutes + seconds + milliseconds
+	logger.Debug().Printf("Parsed duration : %d\n", duration)
 	return duration.Microseconds()
 }
 
 func getInputVideoDuration(stderrPipe io.ReadCloser) int64 {
+	logger.Debug().Println("Reading stderr from ffmpeg to get input video duration")
 	scanner := bufio.NewScanner(stderrPipe)
 	var inputVideoDuration int64 = -1
 	for scanner.Scan() {
@@ -49,29 +52,33 @@ func getInputVideoDuration(stderrPipe io.ReadCloser) int64 {
 			break
 		}
 	}
+	logger.Debug().Printf("Input video duration: %d\n", inputVideoDuration)
 	return inputVideoDuration
 }
 
 func sendProgressPercentageThroughChannel(stdoutPipe io.ReadCloser, outputVideoDuration int64, progressChannel chan uint8) {
 	var progressPercentage uint8 = 0
+	logger.Debug().Println("Reading stdout from ffmpeg to get processing progress")
 	scanner := bufio.NewScanner(stdoutPipe)
 	for scanner.Scan() {
 		var cmdOutput = strings.TrimSpace(scanner.Text())
 		if strings.Contains(cmdOutput, "out_time_ms") {
 			us_Output_time, _ := strconv.ParseInt(strings.Split(cmdOutput, "=")[1], 10, 64)
 			progressPercentage = uint8(math.Round(float64(us_Output_time) / float64(outputVideoDuration) * 100))
+			logger.Debug().Printf("Sending Process Percentage through channel: %d\n", progressPercentage)
 			progressChannel <- progressPercentage
 		}
 	}
-
+	logger.Debug().Println("Closing progress channel")
 	close(progressChannel)
 }
 
 func removeTempFile(tmpFileName string) {
+	logger.Debug().Printf("Removing temporary file %s\n", tmpFileName)
 	err := os.Remove(tmpFileName)
 	if err != nil {
-		log.Println("Error deleting tmp file:", err.Error())
+		logger.Warn().Printf("Could not remove temporary file %s : %s\n", tmpFileName, err.Error())
 	} else {
-		log.Println("Removed tmp file!")
+		logger.Debug().Printf("Temporary file %s sucessfully removed\n", tmpFileName)
 	}
 }

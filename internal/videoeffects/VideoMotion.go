@@ -6,13 +6,15 @@ import (
 	"log"
 	"os/exec"
 	"path/filepath"
+
+	"github.com/davidpalves06/GodeoEffects/internal/logger"
 )
 
 func ChangeVideoMotion(tmpFileName string, outputFile string, progressChannel chan uint8, motionSpeed float32) (string, error) {
 	var filter string
 
 	if motionSpeed < 0.25 || motionSpeed > 10 {
-		log.Println("Motion speed is outside the accepted speed range!")
+		logger.Warn().Println("Motion speed is outside the accepted range")
 		return "", errors.New("motion speed is outside the accepted speed range")
 	}
 
@@ -25,6 +27,8 @@ func ChangeVideoMotion(tmpFileName string, outputFile string, progressChannel ch
 		var audioFilterSpeed = motionSpeed / 0.5
 		filter = fmt.Sprintf("[0:v]setpts=%.2f*PTS[v];[0:a]atempo=0.5,atempo=%.2f[a]", videoFilterSpeed, audioFilterSpeed)
 	}
+
+	logger.Debug().Printf("FFmpeg filter: %s\n", filter)
 
 	go startFFmpegMotionChange(tmpFileName, outputFile, progressChannel, motionSpeed, filter)
 	return outputFile, nil
@@ -39,24 +43,28 @@ func startFFmpegMotionChange(tmpFileName string, outputFile string, progressChan
 	} else {
 		cmd = exec.Command("ffmpeg", "-loglevel", "info", "-progress", "pipe:1", "-i", "pipe:0", "-filter_complex", filter, "-map", "[v]", "-map", "[a]", "-y", "-preset", "veryfast", outputFile)
 	}
-	log.Println(cmd.Args)
+	logger.Debug().Println(cmd.Args)
 	stderrPipe, _ := cmd.StderrPipe()
 	stdoutPipe, _ := cmd.StdoutPipe()
 
+	logger.Debug().Println("Starting ffmpeg command")
 	err := cmd.Start()
 
 	if err != nil {
-		log.Fatal("OMG")
+		logger.Error().Printf("Error starting ffmpeg command\n")
+		return
 	}
 
 	var outputVideoDuration int64 = getInputVideoDuration(stderrPipe)
 	outputVideoDuration = int64(float32(float32(outputVideoDuration) / motionSpeed))
+	logger.Debug().Printf("Output video duration : %d\n", outputVideoDuration)
+
 	go sendProgressPercentageThroughChannel(stdoutPipe, outputVideoDuration, progressChannel)
 
 	err = cmd.Wait()
 	if err != nil {
-		log.Print("ERROR on FFmpeg")
-		log.Fatal(err)
+		logger.Error().Println("Error while executing ffmpeg command")
+		return
 	}
 
 	log.Printf("Output file %v generated\n", outputFile)
