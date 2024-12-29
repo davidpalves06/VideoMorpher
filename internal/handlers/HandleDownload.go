@@ -19,7 +19,7 @@ func HandleDownloads(w http.ResponseWriter, r *http.Request) {
 
 	logger.Debug().Printf("Download request for file %s\n", fileName)
 
-	filePath := filepath.Join("./uploads", fileName)
+	filePath := filepath.Join(UPLOAD_DIRECTORY, fileName)
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
 		logger.Error().Println("File not found on uploads directory. Request failed")
 		http.Error(w, "File not found", http.StatusNotFound)

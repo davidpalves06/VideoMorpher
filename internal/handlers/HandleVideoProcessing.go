@@ -14,8 +14,6 @@ import (
 	"github.com/davidpalves06/GodeoEffects/internal/videoeffects"
 )
 
-const UPLOAD_DIRECTORY = "uploads/"
-
 func generateRandomID(length int) string {
 	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	b := make([]byte, length)

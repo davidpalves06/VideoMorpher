@@ -93,7 +93,6 @@ func getMotionCommandParameters(tmpFileName string, inputFormat string, filter s
 			"-c:v", "libx264", "-crf", "23", "-c:a", "aac",
 			"-b:a", "192k", outputFile}
 	} else if inputFormat == "ogv" {
-
 		return []string{"-progress", "pipe:1", "-i", tmpFileName, "-filter_complex", filter, "-map", "[v]", "-map", "[a]", "-y",
 			"-c:v", "libtheora", "-q:v", "7", "-c:a", "libvorbis",
 			"-q:a", "5", "-f", inputFormat, outputFile}

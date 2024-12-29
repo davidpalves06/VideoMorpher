@@ -11,7 +11,7 @@ var (
 	warnLogger  *log.Logger
 	infoLogger  *log.Logger
 	debugLogger *log.Logger
-	logLevel    = 1
+	logLevel    = 0
 )
 
 func init() {
