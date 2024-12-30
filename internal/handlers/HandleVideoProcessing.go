@@ -75,7 +75,7 @@ func HandleFileUploads(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		logger.Debug().Printf("Changing video motion speed by %f\n", motionSpeed)
-		outputFile, err = videoeffects.ChangeVideoMotionSpeed(tmpFile.Name(), handler.Filename, UPLOAD_DIRECTORY, channelMapping[processId], float32(motionSpeed))
+		outputFile, err = videoeffects.ChangeVideoMotionSpeed(tmpFile.Name(), handler.Filename, UPLOAD_DIRECTORY, processId, channelMapping[processId], float32(motionSpeed))
 
 		if err != nil {
 			logger.Error().Println("Error processing video. Request failed")
@@ -87,7 +87,7 @@ func HandleFileUploads(w http.ResponseWriter, r *http.Request) {
 		outputFormat := r.FormValue("conversionFormat")
 
 		logger.Debug().Printf("Changing video format to %s\n", outputFormat)
-		outputFile, err = videoeffects.ChangeVideoFormat(tmpFile.Name(), handler.Filename, UPLOAD_DIRECTORY, channelMapping[processId], outputFormat)
+		outputFile, err = videoeffects.ChangeVideoFormat(tmpFile.Name(), handler.Filename, UPLOAD_DIRECTORY, processId, channelMapping[processId], outputFormat)
 
 		if err != nil {
 			logger.Error().Println("Error converting video. Request failed")
