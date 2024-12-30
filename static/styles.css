@@ -1,5 +1,7 @@
 body {
     background-color: aqua;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    font-size: clamp(16px,0.8vw,24px);
 }
 
 html,
@@ -14,14 +16,12 @@ body {
     min-height: 100vh;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
 }
 
 #VideoMorpherHeader {
     cursor:pointer;
     margin-top: 20px;
     margin-bottom: 0;
-    font-family:'Times New Roman', Times, serif;
     font-size: 64px;
     font-weight: 800;
     font-style: italic;
@@ -32,7 +32,7 @@ body {
     display: flex;
     flex-direction: column;
     text-align: center;
-    gap: 30px;
+    justify-content: space-evenly;
     align-items: center;
 }
 
@@ -45,20 +45,41 @@ body {
     flex-grow: 0;  
 }
 
+
 .videoPlayer {
     background-color: black;
-    min-width: 300px;
+    min-width: 200px;
     min-height: 200px;
     width: 40vw;
     height: 40vh;
     margin: auto auto;
 }
 
+
+.videoAndOperationContainer {
+    width: 80vw;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.videoContainer {
+    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .operationSelectionContainer {
+    min-height: 25vh;
+    height: 40vh;
     display: none;
     flex-direction: column;
-    gap: 10px;
+    justify-content: space-evenly;
     text-align: center;
+    align-items: center;
 }
 
 .OperationLegend {
@@ -90,23 +111,20 @@ body {
     background-color: rgba(168, 168, 168, 0.685);
     color: white;
     border-radius: 5px;
-    font-size: 0.9rem;
     font-weight: 300;
 }
 
 .operationRadioButton input:checked+label {
     background-color: #007BFF;
-    font-size: 1.25rem;
     font-weight: 600;
     box-shadow: 0px 1px 5px rgb(65, 64, 64);
 }
 
 
 .formatSelect {
-
+    font-size: 1em;
     padding: 10px 15px;
     width: 100px;
-    font-size: 16px;
     color: white;
     background-color: #007bff;
     border-radius: 5px;
@@ -160,22 +178,22 @@ body {
 
 .speedRangeIndicator {
     position: absolute;
+    font-size: 0.65em;
     top: 20px;
     color: rgb(0, 0, 0);
     padding: 5px;
     border-radius: 4px;
-    font-size: 12px;
     text-align: center;
 }
 
 .formButton {
+    font-size: 1.2em;
     padding: 10px;
     background-color: #007BFF;
     color: white;
     border-radius: 5px;
     cursor: pointer;
     border: none;
-    font-size: 1.5rem;
     font-weight: 600;
     margin-bottom: 20px;
 }
@@ -228,7 +246,6 @@ body {
 
 #downloadFile a{
     color: white;
-    font-size: 1.25rem;
     font-weight: 600;
     text-decoration-line:none;
     margin-bottom: auto;

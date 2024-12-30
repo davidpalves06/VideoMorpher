@@ -11,40 +11,45 @@
         <h1 id="VideoMorpherHeader">Video Morpher</h1>
         <p>In this website, you can apply effects to your videos, see the results and download them.</p>
         <form action="/upload" method="post" enctype="multipart/form-data" id="fileForm" class="uploadForm">
-            <legend id="selectedFile" class="selectedFileDescription"></legend>
-            <video id="inputVideoPlayer" class="videoPlayer" hidden controls preload="metadata">
-            </video>
-            <p id="inputVideoErrorMessage" hidden="true"></p>
-            <label for="fileUpload" class="chooseFileLabel" id="chooseFileLabel">
-                Choose File
-            </label>
-            <input type="file" id="fileUpload" name="file" style="display: none;">
+            <div class="videoAndOperationContainer">
+                <div class="videoContainer">
 
-
-            <div class="operationSelectionContainer" id="operationSelectionContainer" hidden>
-
-                <legend class="OperationLegend"><strong><em>Choose operation</em></strong></legend>
-
-                <div class="operationRadioGroup">
-
-                    <div class="operationRadioButton">
-                        <input type="radio" id="conversion" name="operation" value="conversion" checked>
-                        <label for="conversion" class="operationRadioLabel">Conversion</label>
-                    </div>
-
-                    <div class="operationRadioButton">
-                        <input type="radio" id="motion" name="operation" value="motion">
-                        <label for="motion" class="operationRadioLabel">Motion</label>
-                    </div>
+                    <legend id="selectedFile" class="selectedFileDescription"></legend>
+                    <video id="inputVideoPlayer" class="videoPlayer" hidden controls preload="metadata">
+                    </video>
+                    <p id="inputVideoErrorMessage" hidden="true"></p>
+                    <label for="fileUpload" class="chooseFileLabel" id="chooseFileLabel">
+                        Choose File
+                    </label>
+                    <input type="file" id="fileUpload" name="file" style="display: none;">
                 </div>
 
-                <div id="operationInput" class="operationInput"></div>
+
+                <div class="operationSelectionContainer" id="operationSelectionContainer" hidden>
+
+                    <legend class="OperationLegend"><strong><em>Choose operation</em></strong></legend>
+
+                    <div class="operationRadioGroup">
+
+                        <div class="operationRadioButton">
+                            <input type="radio" id="conversion" name="operation" value="conversion" checked>
+                            <label for="conversion" class="operationRadioLabel">Conversion</label>
+                        </div>
+
+                        <div class="operationRadioButton">
+                            <input type="radio" id="motion" name="operation" value="motion">
+                            <label for="motion" class="operationRadioLabel">Motion</label>
+                        </div>
+                    </div>
+
+                    <div id="operationInput" class="operationInput"></div>
+                    <button type="submit" class="formButton" id="formButton" hidden>Upload</button>
+                </div>
             </div>
-            <button type="submit" class="formButton" id="formButton" hidden>Upload</button>
             <div id="pastDownloadsContainer">
                 <p>Past downloads</p>
                 <ul class="pastDownloadList" id="pastDownloadList">
-                    
+
                 </ul>
             </div>
         </form>
