@@ -25,6 +25,7 @@ func generateRandomID(length int) string {
 
 func HandleFileUploads(w http.ResponseWriter, r *http.Request) {
 	logger.Info().Println("File upload request received")
+
 	if r.Method != "POST" {
 		logger.Error().Println("Method not allowed. Request failed")
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)

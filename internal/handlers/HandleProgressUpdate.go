@@ -9,6 +9,12 @@ import (
 
 func HandleProgressUpdates(w http.ResponseWriter, r *http.Request) {
 	logger.Info().Println("Progress update request for a process received")
+	if r.Method != "GET" {
+		logger.Error().Println("Method not allowed. Request failed")
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	processID := r.URL.Query().Get("processID")
 	if processID == "" || channelMapping[processID] == nil {
 		logger.Error().Println("ProcessID is missing. Request failed")
@@ -16,12 +22,6 @@ func HandleProgressUpdates(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	logger.Debug().Printf("Process to be tracked is %s\n", processID)
-
-	if r.Method != "GET" {
-		logger.Error().Println("Method not allowed. Request failed")
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
 
 	w.Header().Set("Content-Type", "text/event-stream")
 	w.Header().Set("Cache-Control", "no-cache")

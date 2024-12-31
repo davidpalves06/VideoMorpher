@@ -10,6 +10,13 @@ import (
 
 func HandleDownloads(w http.ResponseWriter, r *http.Request) {
 	logger.Info().Println("Download Request received")
+
+	if r.Method != "GET" {
+		logger.Error().Println("Method not allowed. Request failed")
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	fileName := r.URL.Query().Get("file")
 	if fileName == "" {
 		logger.Error().Println("File name is missing from request. Request failed")
