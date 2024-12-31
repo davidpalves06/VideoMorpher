@@ -1,14 +1,19 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/davidpalves06/GodeoEffects/internal/cleaner"
 	"github.com/davidpalves06/GodeoEffects/internal/config"
 	"github.com/davidpalves06/GodeoEffects/internal/handlers"
 	"github.com/davidpalves06/GodeoEffects/internal/logger"
+	"github.com/davidpalves06/GodeoEffects/internal/videoeffects"
 )
 
 func init() {
@@ -31,19 +36,44 @@ func init() {
 }
 
 func main() {
+
 	serverConfig := config.ApplicationConfig.ServerConfig
 	if serverConfig.Host == "" || serverConfig.Port <= 0 {
 		logger.Error().Fatalln("Server configs are not valid")
 	}
+
+	var server = http.Server{
+		Addr: fmt.Sprintf("%s:%d", serverConfig.Host, serverConfig.Port),
+	}
+
 	http.Handle("/static/", http.FileServer(http.Dir(".")))
 	http.HandleFunc("/download/", handlers.HandleDownloads)
 	http.HandleFunc("/upload", handlers.HandleFileUploads)
 	http.HandleFunc("/progress", handlers.HandleProgressUpdates)
 	http.HandleFunc("/", handlers.HandleIndexPage)
 
-	logger.Info().Printf("Web server starting at port %d\n", serverConfig.Port)
-	err := http.ListenAndServe(fmt.Sprintf("%s:%d", serverConfig.Host, serverConfig.Port), nil)
-	if err != nil {
-		logger.Error().Printf("Error starting server : %v\n", err)
+	go func() {
+		logger.Info().Printf("Web server starting at port %d\n", serverConfig.Port)
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			logger.Error().Printf("Error with HTTP server : %s\n", err.Error())
+		}
+	}()
+
+	sigChannel := make(chan os.Signal, 1)
+	signal.Notify(sigChannel, syscall.SIGINT, syscall.SIGTERM)
+
+	<-sigChannel
+
+	logger.Info().Println("Starting Shutdown")
+	shutdownContext, shutdownRelease := context.WithTimeout(context.Background(), 10*time.Second)
+	defer shutdownRelease()
+	if err := server.Shutdown(shutdownContext); err != nil {
+		fmt.Printf("Shutdown timeout is done. Finishing all open commands\n")
+		for _, cmd := range videoeffects.ActiveCommands {
+			cmd.Process.Kill()
+		}
+		videoeffects.VideoCommandWaitGroup.Wait()
 	}
+
+	logger.Info().Println("Shutdown complete")
 }

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os/exec"
 	"path/filepath"
+	"syscall"
 
 	"github.com/davidpalves06/GodeoEffects/internal/logger"
 )
@@ -16,11 +17,13 @@ func ChangeVideoOutputFormat(tmpFileName string, inputFileName string, progressC
 	ext := filepath.Ext(inputFileName)[1:]
 	filenameWithExt := inputFileName[:len(inputFileName)-len(ext)] + outputFormat
 
+	VideoCommandWaitGroup.Add(1)
 	go startFFmpegConversion(tmpFileName, progressChannel, outputFormat, filenameWithExt)
 	return filenameWithExt, nil
 }
 
 func startFFmpegConversion(tmpFileName string, progressChannel chan uint8, outputFormat string, outputFile string) {
+
 	var cmd *exec.Cmd
 	params := getConversionCommandParameters(tmpFileName, outputFormat, outputFile)
 	if len(params) != 0 {
@@ -34,7 +37,18 @@ func startFFmpegConversion(tmpFileName string, progressChannel chan uint8, outpu
 	stdoutPipe, _ := cmd.StdoutPipe()
 
 	logger.Debug().Println("Starting ffmpeg command")
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		Setpgid: true,
+	}
 	err := cmd.Start()
+
+	ActiveCommands[tmpFileName] = *cmd
+	defer func() {
+		removeTempFile(tmpFileName)
+		close(progressChannel)
+		delete(ActiveCommands, tmpFileName)
+		VideoCommandWaitGroup.Done()
+	}()
 
 	if err != nil {
 		logger.Error().Printf("Error starting ffmpeg command\n")
@@ -44,16 +58,16 @@ func startFFmpegConversion(tmpFileName string, progressChannel chan uint8, outpu
 	var outputVideoDuration int64 = getInputVideoDuration(stderrPipe)
 	logger.Debug().Printf("Output video duration : %d\n", outputVideoDuration)
 
-	go sendProgressPercentageThroughChannel(stdoutPipe, outputVideoDuration, progressChannel)
+	sendProgressPercentageThroughChannel(stdoutPipe, outputVideoDuration, progressChannel)
 
 	err = cmd.Wait()
 	if err != nil {
 		logger.Error().Println("Error while executing ffmpeg command")
+		progressChannel <- 255
 		return
 	}
 
 	logger.Debug().Printf("Output file %s generated\n", outputFile)
-	removeTempFile(tmpFileName)
 }
 
 func getConversionCommandParameters(tmpFileName string, outputFormat string, outputFile string) []string {

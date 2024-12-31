@@ -141,7 +141,6 @@ export const FileUploadScript = () => {
                 let videoSource = document.createElement('source')
                 videoSource.src = streamLink
                 videoSource.onerror = ((event) => {
-                    console.log("WTF", event);
                     outputVideoPlayer.innerHTML = ""
                     outputVideoPlayer.hidden = true
                     let outputVideoErrorMessage = document.getElementById("outputVideoErrorMessage")
@@ -159,6 +158,10 @@ export const FileUploadScript = () => {
 
         progressSource.onerror = (event) => {
             progressSource.close()
+            let outputVideoErrorMessage = document.getElementById("outputVideoErrorMessage")
+            outputVideoErrorMessage.innerHTML = "<strong>Error while processing video. Try again please</strong>"
+            outputVideoErrorMessage.hidden = false
+            progressContainer.style.display = 'none'
         }
     }
 }

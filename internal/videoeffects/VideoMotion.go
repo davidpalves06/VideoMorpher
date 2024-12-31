@@ -6,6 +6,7 @@ import (
 	"log"
 	"os/exec"
 	"path/filepath"
+	"syscall"
 
 	"github.com/davidpalves06/GodeoEffects/internal/logger"
 )
@@ -30,6 +31,7 @@ func ChangeVideoMotion(tmpFileName string, outputFile string, progressChannel ch
 
 	logger.Debug().Printf("FFmpeg filter: %s\n", filter)
 
+	VideoCommandWaitGroup.Add(1)
 	go startFFmpegMotionChange(tmpFileName, outputFile, progressChannel, motionSpeed, filter)
 	return outputFile, nil
 }
@@ -48,7 +50,18 @@ func startFFmpegMotionChange(tmpFileName string, outputFile string, progressChan
 	stdoutPipe, _ := cmd.StdoutPipe()
 
 	logger.Debug().Println("Starting ffmpeg command")
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		Setpgid: true,
+	}
 	err := cmd.Start()
+
+	ActiveCommands[tmpFileName] = *cmd
+	defer func() {
+		removeTempFile(tmpFileName)
+		close(progressChannel)
+		delete(ActiveCommands, tmpFileName)
+		VideoCommandWaitGroup.Done()
+	}()
 
 	if err != nil {
 		logger.Error().Printf("Error starting ffmpeg command\n")
@@ -59,16 +72,16 @@ func startFFmpegMotionChange(tmpFileName string, outputFile string, progressChan
 	outputVideoDuration = int64(float32(float32(outputVideoDuration) / motionSpeed))
 	logger.Debug().Printf("Output video duration : %d\n", outputVideoDuration)
 
-	go sendProgressPercentageThroughChannel(stdoutPipe, outputVideoDuration, progressChannel)
+	sendProgressPercentageThroughChannel(stdoutPipe, outputVideoDuration, progressChannel)
 
 	err = cmd.Wait()
 	if err != nil {
 		logger.Error().Println("Error while executing ffmpeg command")
+		progressChannel <- 255
 		return
 	}
 
 	log.Printf("Output file %v generated\n", outputFile)
-	removeTempFile(tmpFileName)
 }
 
 func getMotionCommandParameters(tmpFileName string, inputFormat string, filter string, outputFile string) []string {

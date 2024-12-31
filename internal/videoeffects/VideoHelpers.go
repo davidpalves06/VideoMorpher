@@ -5,12 +5,17 @@ import (
 	"io"
 	"math"
 	"os"
+	"os/exec"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/davidpalves06/GodeoEffects/internal/logger"
 )
+
+var ActiveCommands map[string]exec.Cmd = make(map[string]exec.Cmd)
+var VideoCommandWaitGroup sync.WaitGroup
 
 func is_Format_Supported(format string) bool {
 	var supportedFormats = map[string]bool{
@@ -70,7 +75,6 @@ func sendProgressPercentageThroughChannel(stdoutPipe io.ReadCloser, outputVideoD
 		}
 	}
 	logger.Debug().Println("Closing progress channel")
-	close(progressChannel)
 }
 
 func removeTempFile(tmpFileName string) {

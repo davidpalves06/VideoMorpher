@@ -37,10 +37,18 @@ func HandleProgressUpdates(w http.ResponseWriter, r *http.Request) {
 	processChannel := channelMapping[processID]
 
 	for percentage := range processChannel {
-		fmt.Fprintf(w, "event: progress\n")
-		fmt.Fprintf(w, "data: %d\n\n", percentage)
-		logger.Debug().Println("Sending update event")
-		flusher.Flush()
+		if percentage == 255 {
+			fmt.Fprintf(w, "event: error\n\n")
+			flusher.Flush()
+			delete(channelMapping, processID)
+			logger.Warn().Println("Sending Error event. Progress update finished before expected")
+			return
+		} else {
+			fmt.Fprintf(w, "event: progress\n")
+			fmt.Fprintf(w, "data: %d\n\n", percentage)
+			flusher.Flush()
+			logger.Debug().Println("Sending update event")
+		}
 	}
 
 	delete(channelMapping, processID)
