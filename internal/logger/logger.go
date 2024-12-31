@@ -14,7 +14,11 @@ var (
 	logLevel    = 0
 )
 
-func init() {
+func InitLogger(level int) {
+	if level < 0 || level > 3 {
+		log.Fatalln("Logger level is not valid")
+	}
+	logLevel = level
 	infoLogger = log.New(os.Stdout, "INFO ", log.Ldate|log.Ltime|log.Lshortfile)
 	warnLogger = log.New(os.Stdout, "WARN ", log.Ldate|log.Ltime|log.Lshortfile)
 	debugLogger = log.New(os.Stdout, "DEBUG ", log.Ldate|log.Ltime|log.Lshortfile)

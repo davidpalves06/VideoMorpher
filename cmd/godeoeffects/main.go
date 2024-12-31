@@ -1,15 +1,20 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 
 	"github.com/davidpalves06/GodeoEffects/internal/cleaner"
+	"github.com/davidpalves06/GodeoEffects/internal/config"
 	"github.com/davidpalves06/GodeoEffects/internal/handlers"
 	"github.com/davidpalves06/GodeoEffects/internal/logger"
 )
 
 func init() {
+
+	config.LoadConfigurations()
+
 	if _, err := os.Stat(handlers.UPLOAD_DIRECTORY); os.IsNotExist(err) {
 		err := os.MkdirAll(handlers.UPLOAD_DIRECTORY, os.ModePerm)
 		if err != nil {
@@ -20,18 +25,24 @@ func init() {
 	} else {
 		logger.Debug().Println("Upload Directory already exists")
 	}
+
 	cleaner.StartRoutineToCleanOldUploadFiles()
+
 }
 
 func main() {
+	serverConfig := config.ApplicationConfig.ServerConfig
+	if serverConfig.Host == "" || serverConfig.Port <= 0 {
+		logger.Error().Fatalln("Server configs are not valid")
+	}
 	http.Handle("/static/", http.FileServer(http.Dir(".")))
 	http.HandleFunc("/download/", handlers.HandleDownloads)
 	http.HandleFunc("/upload", handlers.HandleFileUploads)
 	http.HandleFunc("/progress", handlers.HandleProgressUpdates)
 	http.HandleFunc("/", handlers.HandleIndexPage)
 
-	logger.Info().Println("Web server starting at port 8080")
-	err := http.ListenAndServe("127.0.0.1:8080", nil)
+	logger.Info().Printf("Web server starting at port %d\n", serverConfig.Port)
+	err := http.ListenAndServe(fmt.Sprintf("%s:%d", serverConfig.Host, serverConfig.Port), nil)
 	if err != nil {
 		logger.Error().Printf("Error starting server : %v\n", err)
 	}
