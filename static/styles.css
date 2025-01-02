@@ -1,10 +1,12 @@
 body {
-    background-color: aqua;
+    background-color: rgb(221, 221, 221);
     font-family:Verdana, Geneva, Tahoma, sans-serif;
-    font-size: clamp(16px,0.8vw,24px);
 }
 
-html,
+html {
+    font-size: clamp(12px,0.9vw,28px);
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -20,12 +22,18 @@ body {
 
 #VideoMorpherHeader {
     cursor:pointer;
-    margin-top: 20px;
+    margin: 5vh 2vw 0px;
     margin-bottom: 0;
-    font-size: 64px;
+    font-size: clamp(48px,6vw,64px);
     font-weight: 800;
     font-style: italic;
-    color: yellowgreen;
+    color: black;
+}
+
+.VideoMorpherDescription{
+    text-align: center;
+    margin: 2vh 2vw;
+    font-size: 1.5rem;
 }
 
 .uploadForm {
@@ -38,7 +46,7 @@ body {
 
 .chooseFileLabel {
     padding: 10px;
-    background-color: #007BFF;
+    background-color: #009688;
     color: white;
     border-radius: 5px;
     cursor: pointer;
@@ -48,10 +56,8 @@ body {
 
 .videoPlayer {
     background-color: black;
-    min-width: 200px;
-    min-height: 200px;
-    width: 40vw;
-    height: 40vh;
+    max-height: 40vh;
+    max-width: 40vw;
     margin: auto auto;
 }
 
@@ -62,6 +68,12 @@ body {
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
+}
+
+@media screen and (max-width: 767px) {
+    .videoAndOperationContainer {
+        flex-direction: column;
+    }
 }
 
 .videoContainer {
@@ -115,7 +127,7 @@ body {
 }
 
 .operationRadioButton input:checked+label {
-    background-color: #007BFF;
+    background-color: #009688;
     font-weight: 600;
     box-shadow: 0px 1px 5px rgb(65, 64, 64);
 }
@@ -126,7 +138,7 @@ body {
     padding: 10px 15px;
     width: 100px;
     color: white;
-    background-color: #007bff;
+    background-color: #818181;
     border-radius: 5px;
     border: none;
 
@@ -158,7 +170,7 @@ body {
 .motionSliderInput::-webkit-slider-thumb {
     height: 20px;
     width: 10px;
-    background-color: #007bff;
+    background-color: #009688;
     cursor: pointer;
     border: none;
 }
@@ -166,7 +178,7 @@ body {
 .motionSliderInput::-moz-range-thumb {
     height: 20px;
     width: 10px;
-    background-color: #007bff;
+    background-color: #009688;
     border: none;
     cursor: pointer;
 }
@@ -189,7 +201,7 @@ body {
 .formButton {
     font-size: 1.2em;
     padding: 10px;
-    background-color: #007BFF;
+    background-color: #009688;
     color: white;
     border-radius: 5px;
     cursor: pointer;
@@ -225,11 +237,11 @@ body {
 }
 
 #progressTracker::-moz-progress-bar {
-    background-color: #007BFF;
+    background-color: #009688;
 }
 
 #progressTracker::-webkit-progress-bar {
-    background-color: #007BFF;
+    background-color: #009688;
 }
 
 #progressLabel {
@@ -263,20 +275,19 @@ body {
     margin: 0;
 }
 
-.pastDownloadList li {
+.pastDownloadList li a{
     border-radius: 5px;
     padding: 10px;
     background-color: #ffffff96;
-    color: #007BFF;
     text-decoration-line: underline;
     margin-bottom: 10px;
 }
 
-.pastDownloadList li:hover {
-    cursor: pointer;
+.pastDownloadList li a:hover {
     box-shadow: 0px 0px 3px rgb(65, 64, 64);
-    background-color: transparent;
+    cursor: pointer;
 }
+
 
 .pastDownloadList li:last-child {
     margin-bottom: 0;

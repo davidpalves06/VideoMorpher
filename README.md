@@ -1,7 +1,6 @@
 # VIDEO MORPHER
 WebServer written in Go to add effects to video files
 
-//TODO: Better UI
 
 //TODO: DOCKERIZE EVERYTHING AND FINISH README
 //TODO: ADD OTHER EFFECTS

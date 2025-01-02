@@ -9,7 +9,7 @@
 <body>
     <div class="pageContainer">
         <h1 id="VideoMorpherHeader">Video Morpher</h1>
-        <p>In this website, you can apply effects to your videos, see the results and download them.</p>
+        <p class="VideoMorpherDescription">In this website, you can apply effects to your videos, see the results and download them.</p>
         <form action="/upload" method="post" enctype="multipart/form-data" id="fileForm" class="uploadForm">
             <div class="videoAndOperationContainer">
                 <div class="videoContainer">
@@ -58,7 +58,7 @@
             <label for="progressTracker" id="progressLabel">0%</label>
         </div>
         <p id="videoProcessedInfo" hidden>Video processed! You can download it in the link below!</p>
-        <video id="outputVideoPlayer" class="videoPlayer" controls preload="metadata" hidden>
+        <video id="outputVideoPlayer" width="" class="videoPlayer" controls preload="metadata" hidden>
         </video>
         <p id="outputVideoErrorMessage" hidden="true"></p>
 
