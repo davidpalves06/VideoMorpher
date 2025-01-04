@@ -1,5 +1,5 @@
 import { ffmpegSupportedFormats, LOCAL_STORAGE_DOWNLOADS_KEY, sizeUnits } from "./Constants.mjs";
-import {OperationInputScript} from "./OperationInput.mjs"
+import { OperationInputScript } from "./OperationInput.mjs"
 
 const fileForm = document.getElementById("fileForm");
 const fileUploadInput = document.getElementById("fileUpload");
@@ -11,8 +11,9 @@ const progressTracker = document.getElementById("progressTracker");
 const inputVideoPlayer = document.getElementById("inputVideoPlayer");
 const operationSelectionContainer = document.getElementById("operationSelectionContainer")
 const outputVideoPlayer = document.getElementById("outputVideoPlayer")
+const progressLabel = document.getElementById('progressLabel')
 let streamLink = ''
-let outputFileName = '' 
+let outputFileName = ''
 
 
 const handleFileUpload = () => {
@@ -69,20 +70,20 @@ const addToLocalStorageList = () => {
     let pastDownloads = localStorage.getItem(LOCAL_STORAGE_DOWNLOADS_KEY);
     let newFile = {
         outputFileName,
-        creationDate : new Date()
+        creationDate: new Date()
     }
     if (pastDownloads == null) {
         let pastDownloadList = {
-            downloads:[]
+            downloads: []
         }
 
         pastDownloadList.downloads.push(newFile)
 
-        localStorage.setItem(LOCAL_STORAGE_DOWNLOADS_KEY,JSON.stringify(pastDownloadList))
+        localStorage.setItem(LOCAL_STORAGE_DOWNLOADS_KEY, JSON.stringify(pastDownloadList))
     } else {
         let pastDownloadList = JSON.parse(pastDownloads)
         pastDownloadList.downloads.push(newFile)
-        localStorage.setItem(LOCAL_STORAGE_DOWNLOADS_KEY,JSON.stringify(pastDownloadList))
+        localStorage.setItem(LOCAL_STORAGE_DOWNLOADS_KEY, JSON.stringify(pastDownloadList))
     }
 }
 export const FileUploadScript = () => {
@@ -96,7 +97,11 @@ export const FileUploadScript = () => {
     fileForm.addEventListener("submit", async (event) => {
         event.preventDefault()
         const formData = new FormData(fileForm)
-
+        const progressBeginning = document.getElementById("progressBeginning")
+        fileForm.style.display = "none"
+        progressLabel.innerHTML = `0%`
+        progressContainer.style.display = "block"
+        progressBeginning.hidden = false
         const response = await fetch("/upload", {
             method: "POST",
             body: formData
@@ -108,9 +113,9 @@ export const FileUploadScript = () => {
             trackVideoProgress(processID)
             downloadFile.innerHTML = `<a href='/download?file=${resultJSON.generatedFile}&stream=disabled' class="chooseFileLabel">Download file</a>`
             downloadFile.hidden = true
+            progressBeginning.hidden = true
             outputFileName = resultJSON.generatedFile
             streamLink = `/download?file=${outputFileName}&stream=enabled`
-            fileForm.style.display = "none"
         } else {
             downloadFile.innerHTML = "<p>Error processing File!</p>"
         }
@@ -119,11 +124,6 @@ export const FileUploadScript = () => {
     function trackVideoProgress(processID) {
         const progressSource = new EventSource(`/progress?processID=${processID}`)
 
-        const progressLabel = document.getElementById('progressLabel')
-        progressSource.onopen = () => {
-            progressLabel.innerHTML = `0%`
-            progressContainer.style.display = "block"
-        }
 
         progressSource.addEventListener('progress', function (event) {
             const progress = event.data

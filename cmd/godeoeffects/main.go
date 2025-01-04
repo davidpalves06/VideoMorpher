@@ -56,6 +56,7 @@ func main() {
 		logger.Info().Printf("Web server starting at port %d\n", serverConfig.Port)
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			logger.Error().Printf("Error with HTTP server : %s\n", err.Error())
+			os.Exit(1)
 		}
 	}()
 

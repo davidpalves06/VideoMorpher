@@ -156,8 +156,9 @@ body {
 
 
 .motionSliderInput::-webkit-slider-runnable-track {
+    appearance: none;
     height: 10px;
-    background: #ccc;
+    background: #c5c9a5d0;
     border-radius: 16px;
 }
 
@@ -168,11 +169,14 @@ body {
 }
 
 .motionSliderInput::-webkit-slider-thumb {
+    appearance: none;
     height: 20px;
     width: 10px;
     background-color: #009688;
-    cursor: pointer;
     border: none;
+    cursor: pointer;
+    border-radius: 16px;
+    transform: translate(0,-5px);
 }
 
 .motionSliderInput::-moz-range-thumb {
@@ -241,6 +245,7 @@ body {
 }
 
 #progressTracker::-webkit-progress-bar {
+    border-radius: 20px;
     background-color: #009688;
 }
 
@@ -275,16 +280,19 @@ body {
     margin: 0;
 }
 
-.pastDownloadList li a{
+.pastDownloadList li{
+    margin-bottom: 10px;
     border-radius: 5px;
     padding: 10px;
     background-color: #ffffff96;
+}
+
+.pastDownloadList li a{
+    padding: 10px;
     text-decoration-line: underline;
-    margin-bottom: 10px;
 }
 
 .pastDownloadList li a:hover {
-    box-shadow: 0px 0px 3px rgb(65, 64, 64);
     cursor: pointer;
 }
 
