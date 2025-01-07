@@ -68,10 +68,14 @@ func sendProgressPercentageThroughChannel(stdoutPipe io.ReadCloser, outputVideoD
 	for scanner.Scan() {
 		var cmdOutput = strings.TrimSpace(scanner.Text())
 		if strings.Contains(cmdOutput, "out_time_ms") {
-			us_Output_time, _ := strconv.ParseInt(strings.Split(cmdOutput, "=")[1], 10, 64)
-			progressPercentage = uint8(math.Round(float64(us_Output_time) / float64(outputVideoDuration) * 100))
-			logger.Debug().Printf("Sending Process Percentage through channel: %d\n", progressPercentage)
-			progressChannel <- progressPercentage
+			us_Output_time, err := strconv.ParseInt(strings.Split(cmdOutput, "=")[1], 10, 64)
+			if err != nil {
+				logger.Warn().Printf("Error while parsing progression for log %s. Error : %s\n", cmdOutput, err.Error())
+			} else {
+				progressPercentage = uint8(math.Round(float64(us_Output_time) / float64(outputVideoDuration) * 100))
+				logger.Debug().Printf("Sending Process Percentage through channel: %d\n", progressPercentage)
+				progressChannel <- progressPercentage
+			}
 		}
 	}
 	logger.Debug().Println("Closing progress channel")
