@@ -4,11 +4,21 @@ WebServer written in Go that allows users to upload video files and apply effect
 
 It can be accessed on **http://15.188.106.46:8080/**
 
+## Table of Contents
+- [Prerequisites](#prerequisites)
+- [Running the Web Server](#running-the-web-server)
+  - [From Source Code](#from-source-code)
+  - [Using Docker](#using-docker)
+- [Configuration](#configuration)
+- [Next Steps](#next-steps)
+
 ## Prerequisites
 
 - To run the WebServer, [FFmpeg](https://ffmpeg.org/) is required to be installed on the machine.
 
-## Running the Web Server from source code
+## Running the Web Server
+
+### From source code
 
 1. Clone the repository:
     ```sh
@@ -22,16 +32,16 @@ It can be accessed on **http://15.188.106.46:8080/**
     ```
 
 3. Run the executable:
-    ```
+    ```sh
     ./videomorpher
     ```
 
 4. Access web server from browser:
-   ```
+   ```plaintext
     http://localhost:8080/
     ```
 
-## Running the Web Server from docker image
+## Using docker
 1. Clone the repository:
     ```sh
     git clone https://github.com/davidpalves06/VideoMorpher.git
@@ -49,7 +59,7 @@ It can be accessed on **http://15.188.106.46:8080/**
     ```
     
 4. Access web server from browser:
-   ```
+   ```plaintext
     http://localhost:8080/
     ```
 
@@ -59,7 +69,7 @@ By default, the server will look for the configuration on **_config.json_**.  If
 ### Configuration parameters
 
 #### Configuration Example
-```
+```json
 {
     "server": {
         "host": "0.0.0.0",
