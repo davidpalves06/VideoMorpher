@@ -6,3 +6,6 @@ WebServer written in Go to add effects to video files
 
 NEEDED COMMANDS TO RUN WEB SERVER:
 ffmpeg
+
+Running on:
+http://15.188.106.46:8080/

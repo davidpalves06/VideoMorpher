@@ -2,6 +2,6 @@
 
 set -xe
 
-go build cmd/godeoeffects/main.go
+go build cmd/videomorpher/videomorpher.go
 
 ./main
