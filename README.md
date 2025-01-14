@@ -58,7 +58,7 @@ By default, the server will look for the configuration on **_config.json_**.  If
 
 ### Configuration parameters
 
-**Configuration Example**
+#### Configuration Example
 ```
 {
     "server": {
@@ -71,19 +71,20 @@ By default, the server will look for the configuration on **_config.json_**.  If
     "uploadDir": "./uploads/"
 }
 ```
- **Server configurations**
+
+ #### Server configurations
  With this configurations, the user can set the host and the port in which the socket should listen to requests.
 
- **Log configurations**
+ #### Log configurations 
  Here the user can define the minimum level of logs that the server should generate.  
-   0 - DEBUG  
-   1 - INFO  
-   2 - WARN  
-   3 - ERROR  
+ - 0 - DEBUG
+ - 1 - INFO
+ - 2 - WARN
+ - 3 - ERROR  
 
  If not specified, the default log level is 1 (INFO)
 
- **Upload Directory configuration**
+ #### Upload Directory configuration
  This configuration always the user to change the folder where uploads are stored.
  If not specified, the default upload directory is _uploads_.
 
