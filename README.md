@@ -2,8 +2,6 @@
 
 WebServer written in Go that allows users to upload video files and apply effects. The server uses FFMPEG to handle video operations.
 
-It can be accessed on **http://15.188.106.46:8080/**
-
 ## Table of Contents
 - [Prerequisites](#prerequisites)
 - [Running the Web Server](#running-the-web-server)
